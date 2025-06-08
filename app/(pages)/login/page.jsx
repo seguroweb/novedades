@@ -137,7 +137,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
+    <div className="bg-gradient-to-br from-blue-50 via-white to-blue-100">
       {/* Main Content */}
       <main className="flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
@@ -166,7 +166,7 @@ export default function LoginPage() {
                     Usuario
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Mail className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
                     <input
                       id="usuario"
                       name="usuario"
@@ -177,7 +177,7 @@ export default function LoginPage() {
                       onBlur={handleBlur}
                       aria-invalid={!!errors.usuario}
                       aria-describedby={errors.usuario ? "usuario-error" : undefined}
-                      className={`pl-10 pr-10 h-12 w-full rounded-md border focus:ring-1 focus:ring-blue-500 ${
+                      className={`text-gray-700 pl-10 pr-10 h-12 w-full rounded-md border focus:ring-1 focus:ring-blue-500 ${
                         getFieldStatus("usuario") === "valid"
                           ? "border-green-500 focus:border-green-500"
                           : getFieldStatus("usuario") === "invalid"
@@ -207,7 +207,7 @@ export default function LoginPage() {
                     Contraseña
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
                     <input
                       id="contraseña"
                       name="contraseña"
@@ -218,7 +218,7 @@ export default function LoginPage() {
                       onBlur={handleBlur}
                       aria-invalid={!!errors.contraseña}
                       aria-describedby={errors.contraseña ? "contraseña-error" : undefined}
-                      className={`pl-10 pr-10 h-12 w-full rounded-md border focus:ring-1 focus:ring-blue-500 ${
+                      className={`text-gray-700 pl-10 pr-10 h-12 w-full rounded-md border focus:ring-1 focus:ring-blue-500 ${
                         getFieldStatus("contraseña") === "valid"
                           ? "border-green-500 focus:border-green-500"
                           : getFieldStatus("contraseña") === "invalid"
@@ -230,7 +230,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-4 text-gray-400 hover:text-gray-600"
                       aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -246,7 +246,7 @@ export default function LoginPage() {
                   <div className="text-xs text-gray-500 mt-1">La contraseña debe tener al menos 6 caracteres</div>
                 </div>
 
-                <div className="flex items-center justify-between">
+                {/* <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <input
                       id="remember-me"
@@ -261,7 +261,7 @@ export default function LoginPage() {
                   <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-500 hover:underline">
                     ¿Olvidaste tu contraseña?
                   </Link>
-                </div>
+                </div> */}
 
                 <button
                   type="submit"
@@ -271,7 +271,7 @@ export default function LoginPage() {
                   {isLoading ? "Ingresando..." : "INGRESAR"}
                 </button>
               </form>
-
+{/* 
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600">
                   ¿Necesitas ayuda?{" "}
@@ -279,7 +279,7 @@ export default function LoginPage() {
                     Contacta soporte
                   </Link>
                 </p>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
