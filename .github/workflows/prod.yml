@@ -22,13 +22,15 @@ jobs:
 
       - name: Deploy via SSH
         run: |
-          ssh gys_user@143.198.105.146 << 'EOF'
+            ssh -o StrictHostKeyChecking=no gys_user@143.198.105.146 << 'EOF'
+            export NVM_DIR="$HOME/.nvm"
+            source "$NVM_DIR/nvm.sh"
             cd ~/var/www/novedades-prod || {
-              git clone https://github.com/seguroweb/novedades.git ~/var/www/novedades-prod
-              cd ~/var/www/novedades-prod
+                git clone https://github.com/seguroweb/novedades.git ~/var/www/novedades-prod
+                cd ~/var/www/novedades-prod
             }
             git pull origin main
             npm install
-            npm build
+            npm run build
             pm2 restart novedades-prod || pm2 start npm --name "novedades-prod" -- start
-          EOF
+            EOF
