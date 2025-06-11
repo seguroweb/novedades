@@ -24,7 +24,7 @@ jobs:
         run: |
           ssh gys_user@143.198.105.146 << 'EOF'
             cd ~/var/www/novedades-prod || {
-              git clone git@github.com:seguroweb/novedades.git ~/var/www/novedades-prod
+              git clone https://github.com/seguroweb/novedades.git ~/var/www/novedades-prod
               cd ~/var/www/novedades-prod
             }
             git pull origin main
