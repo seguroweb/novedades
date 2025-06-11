@@ -243,10 +243,9 @@ export default function LoginPage() {
                       ))}
                     </div>
                   )}
-                  <div className="text-xs text-gray-500 mt-1">La contraseña debe tener al menos 6 caracteres</div>
                 </div>
 
-                {/* <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between">
                   <div className="flex items-center">
                     <input
                       id="remember-me"
@@ -261,7 +260,7 @@ export default function LoginPage() {
                   <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-500 hover:underline">
                     ¿Olvidaste tu contraseña?
                   </Link>
-                </div> */}
+                </div>
 
                 <button
                   type="submit"
@@ -271,7 +270,7 @@ export default function LoginPage() {
                   {isLoading ? "Ingresando..." : "INGRESAR"}
                 </button>
               </form>
-{/* 
+
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600">
                   ¿Necesitas ayuda?{" "}
@@ -279,7 +278,7 @@ export default function LoginPage() {
                     Contacta soporte
                   </Link>
                 </p>
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
