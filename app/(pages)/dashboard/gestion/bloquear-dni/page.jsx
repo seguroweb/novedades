@@ -3,7 +3,6 @@
 import { useState } from "react"
 import {
   Bell,
-  Calendar,
   ChevronDown,
   ClipboardList,
   FileText,
@@ -19,6 +18,7 @@ import {
   Shield,
   User,
   X,
+  Eye,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -33,8 +33,7 @@ const userInfo = {
   email: "adrianas@segurobici.com.ar",
 }
 
-// Actualizar el array menuItems para incluir el submenu de Gestión
-
+// Menú de navegación
 const menuItems = [
   {
     name: "Inicio",
@@ -77,7 +76,7 @@ const menuItems = [
       { name: "Listar Bajas", href: "/dashboard/gestion/listar-bajas" },
       { name: "Bicicleterías", href: "/dashboard/gestion/bicicleterias" },
       { name: "Bicicletas por valor", href: "/dashboard/gestion/bicicletas-valor" },
-      { name: "Última Gestión Vendedor", href: "/dashboard/gestion/ultima-gestion-vendedor" },
+      { name: "Última Gestión Vendedor", href: "/dashboard/gestion/ultima-gestion" },
       { name: "Bloquear DNI", href: "/dashboard/gestion/bloquear-dni" },
       { name: "Go Digital", href: "/dashboard/gestion/go-digital" },
       { name: "Objetivos Vendedor Diario", href: "/dashboard/gestion/objetivos-diario" },
@@ -157,7 +156,9 @@ const UserProfile = ({ user }) => {
 }
 
 const Sidebar = ({ items }) => {
-  const [openMenus, setOpenMenus] = useState({})
+  const [openMenus, setOpenMenus] = useState({
+    Gestión: true, // Abrimos el menú de Gestión por defecto
+  })
   const pathname = usePathname()
 
   const toggleSubmenu = (name) => {
@@ -259,119 +260,32 @@ const MobileMenu = ({ isOpen, onClose, children }) => {
   )
 }
 
-// Componentes para el dashboard
-const WelcomeCard = ({ userName }) => (
-  <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
-    <h2 className="text-2xl font-bold">Bienvenido, {userName}</h2>
-    <p className="mt-2 opacity-90">Aquí tienes un resumen de tu actividad reciente.</p>
-  </div>
-)
-
-const StatsCard = ({ title, value, icon: Icon, trend }) => (
-  <div className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
-    <div className="flex justify-between">
-      <div>
-        <p className="text-sm font-medium text-gray-500">{title}</p>
-        <p className="text-2xl font-bold mt-1">{value}</p>
-        {trend && (
-          <p className={`text-xs mt-2 ${trend.isPositive ? "text-green-600" : "text-red-600"}`}>
-            {trend.isPositive ? "↑" : "↓"} {trend.value} desde el mes pasado
-          </p>
-        )}
-      </div>
-      <div className="bg-blue-50 rounded-full p-3 h-fit">
-        <Icon className="h-6 w-6 text-blue-600" />
-      </div>
-    </div>
-  </div>
-)
-
-const RecentActivityCard = () => {
-  const activities = [
-    { id: 1, title: "Ticket #4582 actualizado", time: "Hace 10 minutos", status: "En progreso" },
-    { id: 2, title: "Nueva operación #9854 creada", time: "Hace 2 horas", status: "Completado" },
-    { id: 3, title: "Ticket #4581 cerrado", time: "Hace 5 horas", status: "Cerrado" },
-    { id: 4, title: "Operación #9853 modificada", time: "Ayer", status: "Pendiente" },
-  ]
-
-  return (
-    <div className="bg-white rounded-lg border border-gray-100 shadow-sm">
-      <div className="border-b border-gray-100 p-4">
-        <h3 className="font-medium">Actividad reciente</h3>
-      </div>
-      <div className="divide-y divide-gray-100">
-        {activities.map((activity) => (
-          <div key={activity.id} className="p-4 hover:bg-gray-50 transition-colors">
-            <div className="flex justify-between">
-              <p className="font-medium">{activity.title}</p>
-              <span
-                className={`text-xs px-2 py-1 rounded-full ${
-                  activity.status === "Completado"
-                    ? "bg-green-100 text-green-800"
-                    : activity.status === "En progreso"
-                      ? "bg-blue-100 text-blue-800"
-                      : activity.status === "Cerrado"
-                        ? "bg-gray-100 text-gray-800"
-                        : "bg-yellow-100 text-yellow-800"
-                }`}
-              >
-                {activity.status}
-              </span>
-            </div>
-            <p className="text-sm text-gray-500 mt-1">{activity.time}</p>
-          </div>
-        ))}
-      </div>
-      <div className="p-4 border-t border-gray-100">
-        <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">Ver todas las actividades</button>
-      </div>
-    </div>
-  )
-}
-
-const UpcomingEventsCard = () => {
-  const events = [
-    { id: 1, title: "Reunión con cliente", date: "Hoy, 15:00", type: "Reunión" },
-    { id: 2, title: "Vencimiento póliza #12458", date: "Mañana, 00:00", type: "Vencimiento" },
-    { id: 3, title: "Llamada de seguimiento", date: "24 Jun, 10:30", type: "Llamada" },
-  ]
-
-  return (
-    <div className="bg-white rounded-lg border border-gray-100 shadow-sm">
-      <div className="border-b border-gray-100 p-4">
-        <h3 className="font-medium">Próximos eventos</h3>
-      </div>
-      <div className="divide-y divide-gray-100">
-        {events.map((event) => (
-          <div key={event.id} className="p-4 hover:bg-gray-50 transition-colors">
-            <div className="flex justify-between">
-              <p className="font-medium">{event.title}</p>
-              <span
-                className={`text-xs px-2 py-1 rounded-full ${
-                  event.type === "Reunión"
-                    ? "bg-purple-100 text-purple-800"
-                    : event.type === "Vencimiento"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-blue-100 text-blue-800"
-                }`}
-              >
-                {event.type}
-              </span>
-            </div>
-            <p className="text-sm text-gray-500 mt-1">{event.date}</p>
-          </div>
-        ))}
-      </div>
-      <div className="p-4 border-t border-gray-100">
-        <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">Ver calendario completo</button>
-      </div>
-    </div>
-  )
-}
-
-// Componente principal del Dashboard
-export default function Dashboard() {
+// Componente principal de Bloquear DNI
+export default function BloquearDNI() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [dni, setDni] = useState("")
+  const [showList, setShowList] = useState(false)
+  const [dniList, setDniList] = useState([
+    { dni: "30123456", fecha: "10/06/2025", usuario: "admin" },
+    { dni: "28987654", fecha: "08/06/2025", usuario: "supervisor" },
+    { dni: "33456789", fecha: "05/06/2025", usuario: "natalia" },
+  ])
+
+  const handleBloquearDNI = (e) => {
+    e.preventDefault()
+    if (dni.trim() !== "") {
+      // Aquí iría la lógica para bloquear el DNI en el backend
+      alert(`DNI ${dni} bloqueado correctamente`)
+      setDniList([{ dni: dni, fecha: new Date().toLocaleDateString(), usuario: "natalia" }, ...dniList])
+      setDni("")
+    } else {
+      alert("Por favor ingrese un DNI válido")
+    }
+  }
+
+  const handleListarDNI = () => {
+    setShowList(true)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -436,36 +350,137 @@ export default function Dashboard() {
         {/* Main content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
           <div className="max-w-7xl mx-auto">
-            {/* Welcome section */}
-            <div className="mb-6">
-              <WelcomeCard userName={userInfo.name.split(" ")[0]} />
+            {/* Breadcrumbs */}
+            <div className="text-sm text-gray-500 mb-6">
+              <Link href="/dashboard" className="hover:text-blue-600">
+                Inicio
+              </Link>{" "}
+              /{" "}
+              <Link href="#" className="hover:text-blue-600">
+                Gestión
+              </Link>{" "}
+              / Bloquear DNI
             </div>
 
-            {/* Stats section */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <StatsCard
-                title="Operaciones activas"
-                value="24"
-                icon={ClipboardList}
-                trend={{ value: "12%", isPositive: true }}
-              />
-              <StatsCard
-                title="Tickets pendientes"
-                value="7"
-                icon={FileText}
-                trend={{ value: "3%", isPositive: false }}
-              />
-              <StatsCard title="Clientes nuevos" value="12" icon={User} trend={{ value: "8%", isPositive: true }} />
-              <StatsCard title="Eventos programados" value="5" icon={Calendar} />
+            {/* Título principal */}
+            <div className="flex items-center mb-4">
+              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                <Shield className="text-green-600 h-5 w-5" />
+              </div>
+              <h1 className="text-2xl font-bold">Bloquear DNI</h1>
             </div>
 
-            {/* Activity and events section */}
+            {/* Descripción */}
+            <p className="text-gray-600 mb-6">Gestiona el bloqueo de DNIs para prevenir operaciones no autorizadas</p>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <RecentActivityCard />
+                {/* Formulario de bloqueo */}
+                <div className="bg-white rounded-lg shadow p-6 mb-6">
+                  <form onSubmit={handleBloquearDNI}>
+                    <div className="mb-4">
+                      <label htmlFor="dni" className="block text-sm font-medium text-gray-700 mb-1">
+                        DNI:
+                      </label>
+                      <input
+                        type="text"
+                        id="dni"
+                        value={dni}
+                        onChange={(e) => setDni(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Ingrese el DNI a bloquear"
+                      />
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                      <button
+                        type="submit"
+                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 flex items-center"
+                      >
+                        <Shield className="mr-2 h-4 w-4" /> Bloquear DNI
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleListarDNI}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center"
+                      >
+                        <Eye className="mr-2 h-4 w-4" /> Listar DNI
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+                {/* Lista de DNIs bloqueados */}
+                {showList && (
+                  <div className="bg-white rounded-lg shadow overflow-hidden">
+                    <div className="p-4 bg-green-50 border-l-4 border-green-500">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                          <Shield className="text-green-600 h-4 w-4" />
+                        </div>
+                        <h2 className="text-lg font-semibold">DNIs Bloqueados</h2>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">Lista de DNIs que han sido bloqueados en el sistema</p>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              DNI
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Fecha de Bloqueo
+                            </th>
+                            <th
+                              scope="col"
+                              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            >
+                              Usuario
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                          {dniList.map((item, index) => (
+                            <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {item.dni}
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.fecha}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.usuario}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div>
-                <UpcomingEventsCard />
+
+              {/* Panel lateral derecho */}
+              <div className="lg:col-span-1">
+                <div className="bg-white rounded-lg shadow p-6">
+                  <div className="flex items-center mb-4">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2">
+                      <User className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <h2 className="text-lg font-semibold">Bienvenido {userInfo.name}</h2>
+                  </div>
+
+                  <div className="border-t border-gray-200 pt-4">
+                    <p className="text-sm text-gray-600 mb-1">Vendedor Nro: {userInfo.vendorId}</p>
+                    <p className="text-sm text-gray-600 mb-1">Teléfono: {userInfo.phone}</p>
+                    <p className="text-sm text-gray-600 mb-1">Celular: {userInfo.mobile}</p>
+                    <p className="text-sm text-gray-600">Email: {userInfo.email}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
