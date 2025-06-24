@@ -66,6 +66,25 @@ const menuItems = [
     name: "Gestión",
     icon: Settings,
     href: "/dashboard/gestion",
+    submenu: [
+      { name: "Operaciones concretadas", href: "/dashboard/gestion/operaciones-concretadas" },
+      { name: "Operaciones ingresadas", href: "/dashboard/gestion/operaciones-ingresadas" },
+      { name: "Inversión Publicitaria", href: "/dashboard/gestion/inversion-publicitaria" },
+      { name: "Información por Vendedor", href: "/dashboard/gestion/informacion-vendedor" },
+      { name: "Prima por Vendedor", href: "/dashboard/gestion/prima-vendedor" },
+      { name: "Objetivos por Vendedor", href: "/dashboard/gestion/objetivos-vendedor" },
+      { name: "Gestiones por Vendedor", href: "/dashboard/gestion/gestiones-vendedor" },
+      { name: "Listar Vendedores", href: "/dashboard/gestion/listar-vendedores" },
+      { name: "Listar Bajas", href: "/dashboard/gestion/listar-bajas" },
+      { name: "Bicicleterías", href: "/dashboard/gestion/bicicleterias" },
+      { name: "Bicicletas por valor", href: "/dashboard/gestion/bicicletas-valor" },
+      { name: "Última Gestión Vendedor", href: "/dashboard/gestion/ultima-gestion-vendedor" },
+      { name: "Bloquear DNI", href: "/dashboard/gestion/bloquear-dni" },
+      { name: "Go Digital", href: "/dashboard/gestion/go-digital" },
+      { name: "Objetivos Vendedor Diario", href: "/dashboard/gestion/objetivos-diario" },
+      { name: "Delivery", href: "/dashboard/gestion/delivery" },
+      { name: "Dar de alta Usuario", href: "/dashboard/gestion/alta-usuario" },
+    ],
   },
   {
     name: "Tablas",
@@ -153,12 +172,6 @@ const Sidebar = ({ items }) => {
 
   return (
     <nav className="w-full h-full overflow-y-auto py-4">
-      <div className="px-3 py-2">
-        <div className="flex items-center gap-2 px-2">
-          <Shield className="h-6 w-6 text-blue-600" />
-          <span className="font-semibold text-lg text-blue-600">SeguroWeb</span>
-        </div>
-      </div>
 
       <div className="mt-6 space-y-1 px-3">
         {items.map((item) => (

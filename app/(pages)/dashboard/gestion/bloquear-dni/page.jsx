@@ -172,12 +172,6 @@ const Sidebar = ({ items }) => {
 
   return (
     <nav className="w-full h-full overflow-y-auto py-4">
-      <div className="px-3 py-2">
-        <div className="flex items-center gap-2 px-2">
-          <Shield className="h-6 w-6 text-blue-600" />
-          <span className="font-semibold text-lg text-blue-600">SeguroWeb</span>
-        </div>
-      </div>
 
       <div className="mt-6 space-y-1 px-3">
         {items.map((item) => (
