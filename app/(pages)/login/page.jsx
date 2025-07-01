@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Eye, EyeOff, Lock, Mail, CheckCircle, XCircle } from "lucide-react"
 import { z } from "zod"
+import { useAuth } from "@/app/contexts/AuthContext"
 
 // Esquema de validación con Zod
 const loginSchema = z.object({
@@ -11,7 +12,7 @@ const loginSchema = z.object({
     .string()
     .min(3, "El usuario debe tener al menos 3 caracteres")
     .max(50, "El usuario no puede tener más de 50 caracteres"),
-  contraseña: z
+  password: z
     .string()
     .min(6, "La contraseña debe tener al menos 6 caracteres")
     .max(100, "La contraseña es demasiado larga"),
@@ -22,18 +23,19 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     usuario: "",
-    contraseña: "",
+    password: "",
   })
   const [errors, setErrors] = useState({})
   const [touched, setTouched] = useState({
     usuario: false,
-    contraseña: false,
+    password: false,
   })
   const [isValid, setIsValid] = useState(false)
+  const { login } = useAuth()
 
   // Validar el formulario cuando cambian los datos
   useEffect(() => {
-    if (touched.usuario || touched.contraseña) {
+    if (touched.usuario || touched.password) {
       validateForm()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,13 +67,17 @@ export default function LoginPage() {
     }
   }
 
+  console.log(errors)
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    console.log("TUKI")
 
     // Marcar todos los campos como tocados
     setTouched({
       usuario: true,
-      contraseña: true,
+      password: true,
     })
 
     // Validar antes de enviar
@@ -83,27 +89,29 @@ export default function LoginPage() {
     setErrors({})
 
     try {
-    //   const response = await fetch("/api/auth/login", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify(formData),
-    //   })
+      const response = await fetch("http://localhost:3001/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
 
-    //   const data = await response.json()
+      const data = await response.json()
 
-    //   if (!response.ok) {
-    //     // Manejar diferentes tipos de errores del servidor
-    //     if (response.status === 401) {
-    //       setErrors({ form: ["Usuario o contraseña incorrectos"] })
-    //     } else if (response.status === 429) {
-    //       setErrors({ form: ["Demasiados intentos. Inténtalo más tarde"] })
-    //     } else {
-    //       setErrors({ form: [data.message || "Error al iniciar sesión"] })
-    //     }
-    //     return
-    //   }
+      if (!response.ok) {
+        // Manejar diferentes tipos de errores del servidor
+        if (response.status === 401) {
+          setErrors({ form: ["Usuario o contraseña incorrectos"] })
+        } else if (response.status === 429) {
+          setErrors({ form: ["Demasiados intentos. Inténtalo más tarde"] })
+        } else {
+          setErrors({ form: [data.message || "Error al iniciar sesión"] })
+        }
+        return
+      }
+      const { user, token } = data // Ajusta según la estructura de tu respuesta
+      login(user, token)
 
       // Redirect to dashboard or handle successful login
       window.location.href = "/dashboard"
@@ -203,25 +211,25 @@ export default function LoginPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label htmlFor="contraseña" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                     Contraseña
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-4 h-4 w-4 text-gray-400" />
                     <input
-                      id="contraseña"
-                      name="contraseña"
+                      id="password"
+                      name="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Ingresa tu contraseña"
-                      value={formData.contraseña}
+                      value={formData.password}
                       onChange={handleInputChange}
                       onBlur={handleBlur}
-                      aria-invalid={!!errors.contraseña}
-                      aria-describedby={errors.contraseña ? "contraseña-error" : undefined}
+                      aria-invalid={!!errors.password}
+                      aria-describedby={errors.password ? "password-error" : undefined}
                       className={`text-gray-700 pl-10 pr-10 h-12 w-full rounded-md border focus:ring-1 focus:ring-blue-500 ${
-                        getFieldStatus("contraseña") === "valid"
+                        getFieldStatus("password") === "valid"
                           ? "border-green-500 focus:border-green-500"
-                          : getFieldStatus("contraseña") === "invalid"
+                          : getFieldStatus("password") === "invalid"
                             ? "border-red-500 focus:border-red-500"
                             : "border-gray-300 focus:border-blue-500"
                       }`}
@@ -236,9 +244,9 @@ export default function LoginPage() {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
-                  {errors.contraseña && touched.contraseña && (
-                    <div id="contraseña-error" className="text-red-600 text-xs mt-1">
-                      {errors.contraseña.map((error, index) => (
+                  {errors.password && touched.password && (
+                    <div id="password-error" className="text-red-600 text-xs mt-1">
+                      {errors.password.map((error, index) => (
                         <p key={index}>{error}</p>
                       ))}
                     </div>
