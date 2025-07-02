@@ -71,9 +71,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-
-    console.log("TUKI")
-
+    
     // Marcar todos los campos como tocados
     setTouched({
       usuario: true,
