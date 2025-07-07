@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Eye, EyeOff } from 'lucide-react'
+import { API_URL } from '@/app/constants/api'
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState('')
@@ -24,7 +25,7 @@ export default function ResetPasswordPage() {
     }
 
     try {
-      const res = await fetch('http://localhost:3001/auth/reset-password', {
+      const res = await fetch(`${API_URL}/api/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, newPassword: password, confirmPassword }),

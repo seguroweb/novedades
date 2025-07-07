@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Eye, EyeOff, Lock, Mail, CheckCircle, XCircle } from "lucide-react"
 import { z } from "zod"
 import { useAuth } from "@/app/contexts/AuthContext"
+import { API_URL } from "@/app/constants/api"
 
 // Esquema de validación con Zod
 const loginSchema = z.object({
@@ -71,7 +72,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     // Marcar todos los campos como tocados
     setTouched({
       usuario: true,
@@ -87,7 +88,7 @@ export default function LoginPage() {
     setErrors({})
 
     try {
-      const response = await fetch("http://localhost:3001/auth/login", {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

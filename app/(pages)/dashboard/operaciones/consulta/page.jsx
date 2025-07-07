@@ -26,6 +26,8 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import Sidebar from "@/app/components/Sidebar"
+import MobileMenu from "@/app/components/MobileMenu"
 
 // Datos de ejemplo
 const userInfo = {
@@ -36,63 +38,6 @@ const userInfo = {
   mobile: "11 5930 2119",
   email: "adrianas@segurobici.com.ar",
 }
-
-const menuItems = [
-  {
-    name: "Inicio",
-    icon: Home,
-    href: "/dashboard",
-  },
-  {
-    name: "Operaciones",
-    icon: ClipboardList,
-    href: "/dashboard/operaciones",
-    submenu: [
-      { name: "Consulta", href: "/dashboard/operaciones/consulta" },
-      { name: "Crosselling", href: "/dashboard/operaciones/crosselling" },
-      { name: "Solicitudes de Edición", href: "/dashboard/operaciones/solicitudes" },
-    ],
-  },
-  {
-    name: "Tickets",
-    icon: FileText,
-    href: "/dashboard/tickets",
-    submenu: [
-      { name: "Consulta", href: "/dashboard/tickets/consulta" },
-      { name: "Importar", href: "/dashboard/tickets/importar" },
-      { name: "Estadísticas", href: "/dashboard/tickets/estadisticas" },
-    ],
-  },
-  {
-    name: "Gestión",
-    icon: Settings,
-    href: "/dashboard/gestion",
-    submenu: [
-      { name: "Operaciones concretadas", href: "/dashboard/gestion/operaciones-concretadas" },
-      { name: "Operaciones ingresadas", href: "/dashboard/gestion/operaciones-ingresadas" },
-      { name: "Inversión Publicitaria", href: "/dashboard/gestion/inversion-publicitaria" },
-      { name: "Información por Vendedor", href: "/dashboard/gestion/informacion-vendedor" },
-      { name: "Prima por Vendedor", href: "/dashboard/gestion/prima-vendedor" },
-      { name: "Objetivos por Vendedor", href: "/dashboard/gestion/objetivos-vendedor" },
-      { name: "Gestiones por Vendedor", href: "/dashboard/gestion/gestiones-vendedor" },
-      { name: "Listar Vendedores", href: "/dashboard/gestion/listar-vendedores" },
-      { name: "Listar Bajas", href: "/dashboard/gestion/listar-bajas" },
-      { name: "Bicicleterías", href: "/dashboard/gestion/bicicleterias" },
-      { name: "Bicicletas por valor", href: "/dashboard/gestion/bicicletas-valor" },
-      { name: "Última Gestión Vendedor", href: "/dashboard/gestion/ultima-gestion-vendedor" },
-      { name: "Bloquear DNI", href: "/dashboard/gestion/bloquear-dni" },
-      { name: "Go Digital", href: "/dashboard/gestion/go-digital" },
-      { name: "Objetivos Vendedor Diario", href: "/dashboard/gestion/objetivos-diario" },
-      { name: "Delivery", href: "/dashboard/gestion/delivery" },
-      { name: "Dar de alta Usuario", href: "/dashboard/gestion/alta-usuario" },
-    ],
-  },
-  {
-    name: "Tablas",
-    icon: Grid3X3,
-    href: "/dashboard/tablas",
-  },
-]
 
 // Componentes reutilizados del dashboard
 const UserProfile = ({ user }) => {
@@ -158,103 +103,6 @@ const UserProfile = ({ user }) => {
   )
 }
 
-const Sidebar = ({ items }) => {
-  const [openMenus, setOpenMenus] = useState({ Operaciones: true }) // Operaciones abierto por defecto
-  const pathname = usePathname()
-
-  const toggleSubmenu = (name) => {
-    setOpenMenus((prev) => ({
-      ...prev,
-      [name]: !prev[name],
-    }))
-  }
-
-  const isActive = (href) => pathname === href
-
-  return (
-    <nav className="w-full h-full overflow-y-auto py-4">
-
-      <div className="mt-6 space-y-1 px-3">
-        {items.map((item) => (
-          <div key={item.name}>
-            {item.submenu ? (
-              <>
-                <button
-                  onClick={() => toggleSubmenu(item.name)}
-                  className={`flex items-center justify-between w-full rounded-md px-3 py-2 text-sm font-medium ${
-                    openMenus[item.name] ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <item.icon className="h-5 w-5" />
-                    <span>{item.name}</span>
-                  </div>
-                  <ChevronDown className={`h-4 w-4 transition-transform ${openMenus[item.name] ? "rotate-180" : ""}`} />
-                </button>
-
-                {openMenus[item.name] && (
-                  <div className="ml-6 mt-1 space-y-1">
-                    {item.submenu.map((subitem) => (
-                      <Link
-                        key={subitem.name}
-                        href={subitem.href}
-                        className={`block rounded-md px-3 py-2 text-sm ${
-                          isActive(subitem.href)
-                            ? "bg-blue-100 text-blue-700 font-medium"
-                            : "text-gray-600 hover:bg-gray-50"
-                        }`}
-                      >
-                        {subitem.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </>
-            ) : (
-              <Link
-                href={item.href}
-                className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium ${
-                  isActive(item.href) ? "bg-blue-100 text-blue-700" : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                <item.icon className="h-5 w-5" />
-                <span>{item.name}</span>
-              </Link>
-            )}
-          </div>
-        ))}
-      </div>
-    </nav>
-  )
-}
-
-const MobileMenu = ({ isOpen, onClose, children }) => {
-  return (
-    <>
-      {/* Overlay */}
-      {isOpen && <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden" onClick={onClose} />}
-
-      {/* Sidebar */}
-      <div
-        className={`fixed inset-y-0 left-0 w-72 bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="flex items-center justify-between p-4 border-b">
-          <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-blue-600" />
-            <span className="font-semibold text-lg text-blue-600">SeguroWeb</span>
-          </div>
-          <button onClick={onClose} className="p-2 rounded-md text-gray-500 hover:bg-gray-100">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-        <div className="overflow-y-auto h-[calc(100%-64px)]">{children}</div>
-      </div>
-    </>
-  )
-}
-
 // Componente principal de Consulta de Operaciones
 export default function ConsultaOperaciones() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -308,18 +156,6 @@ export default function ConsultaOperaciones() {
               </div>
             </div>
 
-            {/* Center section - Search */}
-            <div className="hidden md:block flex-1 max-w-md mx-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Buscar..."
-                  className="w-full rounded-md border border-gray-300 py-2 pl-10 pr-4 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-
             {/* Right section */}
             <div className="flex items-center gap-3">
               <button className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full">
@@ -337,14 +173,14 @@ export default function ConsultaOperaciones() {
 
       {/* Mobile menu */}
       <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)}>
-        <Sidebar items={menuItems} />
+        <Sidebar />
       </MobileMenu>
 
       {/* Main content */}
       <div className="flex">
         {/* Desktop sidebar */}
         <div className="hidden lg:block w-64 border-r border-gray-200 h-[calc(100vh-64px)] sticky top-16">
-          <Sidebar items={menuItems} />
+          <Sidebar />
         </div>
 
         {/* Main content */}
