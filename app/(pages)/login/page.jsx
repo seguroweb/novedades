@@ -127,7 +127,7 @@ export default function LoginPage() {
       login(user, token)
 
       // Redirect to dashboard or handle successful login
-      //window.location.href = "/dashboard"
+      window.location.href = "/dashboard"
     } catch (err) {
       setErrors({ form: ["Error de conexión. Verifica tu internet"] })
     } finally {
