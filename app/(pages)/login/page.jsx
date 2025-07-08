@@ -68,7 +68,21 @@ export default function LoginPage() {
     }
   }
 
-  console.log(errors)
+  useEffect(() => {
+    const testProd = async () => {
+      try {
+        console.log(API_URL)
+        const response = await fetch(`${API_URL}/users/profile`, {
+          method: "GET",
+        })
+        console.log(response)
+        const data = await response.json()
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    testProd()
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -113,7 +127,7 @@ export default function LoginPage() {
       login(user, token)
 
       // Redirect to dashboard or handle successful login
-      window.location.href = "/dashboard"
+      //window.location.href = "/dashboard"
     } catch (err) {
       setErrors({ form: ["Error de conexión. Verifica tu internet"] })
     } finally {
