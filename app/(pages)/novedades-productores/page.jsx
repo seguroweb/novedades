@@ -237,7 +237,7 @@ const UpcomingEventsCard = () => {
 }
 
 // Componente principal del Dashboard
-export default function Dashboard() {
+export default function NovedadesDashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { user, logout } = useAuth()
 
@@ -303,40 +303,7 @@ export default function Dashboard() {
 
         {/* Main content */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto">
-            {/* Welcome section */}
-            <div className="mb-6">
-              <WelcomeCard userName={userInfo.name.split(" ")[0]} />
-            </div>
-
-            {/* Stats section */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-              <StatsCard
-                title="Operaciones activas"
-                value="24"
-                icon={ClipboardList}
-                trend={{ value: "12%", isPositive: true }}
-              />
-              <StatsCard
-                title="Tickets pendientes"
-                value="7"
-                icon={FileText}
-                trend={{ value: "3%", isPositive: false }}
-              />
-              <StatsCard title="Clientes nuevos" value="12" icon={User} trend={{ value: "8%", isPositive: true }} />
-              <StatsCard title="Eventos programados" value="5" icon={Calendar} />
-            </div>
-
-            {/* Activity and events section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
-                <RecentActivityCard />
-              </div>
-              <div>
-                <UpcomingEventsCard />
-              </div>
-            </div>
-          </div>
+            <h1>Novedades Productores</h1>
         </main>
       </div>
     </div>
