@@ -114,39 +114,6 @@ export default function Sistemas() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-              {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            {/* Left section */}
-            <div className="flex items-center">
-              <button
-                type="button"
-                className="lg:hidden -ml-2 p-2 text-gray-500 hover:text-gray-900"
-                onClick={() => setMobileMenuOpen(true)}
-              >
-                <Menu className="h-6 w-6" />
-              </button>
-              <div className="hidden lg:flex lg:items-center lg:space-x-4">
-                <Shield className="h-8 w-8 text-blue-600" />
-                <span className="text-xl font-bold text-blue-600">SeguroWeb</span>
-              </div>
-            </div>
-
-            {/* Right section */}
-            <div className="flex items-center gap-3">
-              <button className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full">
-                <Bell className="h-5 w-5" />
-              </button>
-              <button className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-full">
-                <HelpCircle className="h-5 w-5" />
-              </button>
-              <div className="h-6 w-px bg-gray-200 mx-1"></div>
-              <UserProfile user={userInfo} />
-            </div>
-          </div>
-        </div>
-      </header>
 
       {/* Main content */}
       <main className="flex-1 p-4 sm:p-6 lg:p-8 flex items-center justify-center">

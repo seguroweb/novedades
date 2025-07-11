@@ -85,10 +85,12 @@ const UserProfile = ({ user }) => {
               <Settings className="h-4 w-4" />
               <span>Configuración</span>
             </button>
-            <button className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-              <LogOut className="h-4 w-4" />
-              <span>Cerrar sesión</span>
-            </button>
+            <Link href={"/"}>
+              <button className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                <LogOut className="h-4 w-4" />
+                <span>Cerrar sesión</span>
+              </button>
+            </Link>
           </div>
         </div>
       )}
@@ -96,7 +98,7 @@ const UserProfile = ({ user }) => {
   );
 };
 
-const HeaderDashboard = () => {
+const HeaderDashboard = ({ sistema }) => {
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
       <div className="px-4 sm:px-6 lg:px-8">
@@ -113,7 +115,7 @@ const HeaderDashboard = () => {
             <Link href={"/sistemas"}>
               <div className="hidden lg:flex lg:items-center lg:space-x-4">
                 <Shield className="h-8 w-8 text-blue-600" />
-                <span className="text-xl font-bold text-blue-600">SeguroWeb</span>
+                <span className="text-xl font-bold text-blue-600">{sistema}</span>
               </div>
             </Link>
           </div>
