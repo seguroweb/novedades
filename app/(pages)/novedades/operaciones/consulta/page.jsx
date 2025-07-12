@@ -23,6 +23,14 @@ import {
   Eye,
   Plus,
   AlertTriangle,
+  ArrowDownUp,
+  Printer,
+  CheckCircle,
+  Edit,
+  Trash2,
+  MoreHorizontal,
+  User2,
+  UserCircle,
 } from "lucide-react"
 import Link from "next/link"
 import Sidebar from "@/app/components/Sidebar"
@@ -47,6 +55,283 @@ export default function ConsultaOperaciones() {
     ranking: "Todos",
     opciones: "Vendedor actual",
   })
+  const [showResults, setShowResults] = useState(false) // State to control table visibility
+
+  // Sample data for the table
+const operationsData = [
+  {
+    nro: "579297",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "11/07/2025",
+    primeraGestion: "11/07/2025 17:40",
+    cliente: "NOSE",
+    cp: "-",
+    telefono: "1163357321",
+    email: "1163357321@gmail.com",
+    formaPago: "1- NC - 1",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Whatsapp",
+    ultimaGestion: "11/07/2025 17:41",
+    proximoContacto: "2025-07-15",
+  },
+  {
+    nro: "579296",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "11/07/2025",
+    primeraGestion: "11/07/2025 17:33",
+    cliente: "Guillermo",
+    cp: "-",
+    telefono: "1127925193",
+    email: "1127925193fernandez@gmail.com",
+    formaPago: "1- NC - 1",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 17:34",
+    proximoContacto: "2025-07-16",
+  },
+  {
+    nro: "579295",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "11/07/2025",
+    primeraGestion: "11/07/2025 17:33",
+    cliente: "Leonel",
+    cp: "-",
+    telefono: "1138878703",
+    email: "1138878703fernandez@gmail.com",
+    formaPago: "99- Costo en",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 17:38",
+    proximoContacto: "2025-07-17",
+  },
+  {
+    nro: "579294",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "11/07/2025",
+    primeraGestion: "11/07/2025 17:32",
+    cliente: "Andrea",
+    cp: "-",
+    telefono: "1162245541",
+    email: "1162245541FERNANDEZ@gmail.com",
+    formaPago: "1- NC - 1",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 17:34",
+    proximoContacto: "2025-07-18",
+  },
+  {
+    nro: "579293",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "11/07/2025",
+    primeraGestion: "11/07/2025 17:28",
+    cliente: "Claudio carbone",
+    cp: "-",
+    telefono: "1159949509",
+    email: "1159949509estrella@gmail.com",
+    formaPago: "1- NC - 1",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 17:31",
+    proximoContacto: "2025-07-19",
+  },
+  {
+    nro: "579253",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "11/07/2025",
+    primeraGestion: "11/07/2025 13:22",
+    cliente: "Daniel",
+    cp: "-",
+    telefono: "1126930171",
+    email: "1126930171fernandez@gmail.com",
+    formaPago: "1- NC - 1",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 13:38",
+    proximoContacto: "2025-07-20",
+  },
+  {
+    nro: "579252",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "11/07/2025",
+    primeraGestion: "11/07/2025 13:21",
+    cliente: "FACUNDO HERNAN SPARECHE",
+    cp: "-",
+    telefono: "1128254665",
+    email: "1128254665estrella@gmail.com",
+    formaPago: "1- NC - 1",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 13:39",
+    proximoContacto: "2025-07-21",
+  },
+  {
+    nro: "579246",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "11/07/2025",
+    primeraGestion: "11/07/2025 13:07",
+    cliente: "CECILIA",
+    cp: "-",
+    telefono: "2994092987",
+    email: "2994092987avenda@gmail.com",
+    formaPago: "1- NC - 1",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 15:15",
+    proximoContacto: "2025-07-22",
+  },
+  {
+    nro: "579245",
+    producto: "Bicicletas Eléctricas",
+    vendedor: "Adriana Suarez",
+    fecha: "11/07/2025",
+    primeraGestion: "11/07/2025 13:06",
+    cliente: "SERGIO",
+    cp: "-",
+    telefono: "2995347282",
+    email: "2995347282avenda@gmail.com",
+    formaPago: "1- NC - 1",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 13:12",
+    proximoContacto: "2025-07-23",
+  },
+  {
+    nro: "579243",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "11/07/2025",
+    primeraGestion: "11/07/2025 12:58",
+    cliente: "MARIANA",
+    cp: "-",
+    telefono: "1162920291",
+    email: "1162920291lebike@gmail.com",
+    formaPago: "6- Interesado",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 17:27",
+    proximoContacto: "2025-07-24",
+  },
+  {
+    nro: "579233",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "11/07/2025",
+    primeraGestion: "11/07/2025 11:35",
+    cliente: "juan rene diaz",
+    cp: "-",
+    telefono: "1121719003",
+    email: "1121719003ESTRELLA@gmail.com",
+    formaPago: "99- Costo en",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 13:17",
+    proximoContacto: "2025-07-25",
+  },
+  {
+    nro: "579180",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "10/07/2025",
+    primeraGestion: "10/07/2025 17:27",
+    cliente: "soledad",
+    cp: "-",
+    telefono: "3814043591",
+    email: "3814043591fernandez@gmail.com",
+    formaPago: "2- NC - 2",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 11:53",
+    proximoContacto: "2025-07-26",
+  },
+  {
+    nro: "579179",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "10/07/2025",
+    primeraGestion: "10/07/2025 17:26",
+    cliente: "Andres",
+    cp: "-",
+    telefono: "1137650308",
+    email: "1137650308fernandez@gmail.com",
+    formaPago: "2- NC - 2",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 11:50",
+    proximoContacto: "2025-07-27",
+  },
+  {
+    nro: "579154",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "10/07/2025",
+    primeraGestion: "10/07/2025 14:51",
+    cliente: "MARIO GONZALEZ",
+    cp: "-",
+    telefono: "1149460343",
+    email: "1149460343francicles@gmail.com",
+    formaPago: "99- Costo en",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 11:44",
+    proximoContacto: "2025-07-28",
+  },
+  {
+    nro: "579148",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "10/07/2025",
+    primeraGestion: "10/07/2025 14:34",
+    cliente: "Mica",
+    cp: "-",
+    telefono: "1154549597",
+    email: "1154549597fernandez@gmail.com",
+    formaPago: "99- Costo en",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "10/07/2025 14:38",
+    proximoContacto: "2025-07-29",
+  },
+  {
+    nro: "579146",
+    producto: "Bicicletas",
+    vendedor: "Adriana Suarez",
+    fecha: "10/07/2025",
+    primeraGestion: "10/07/2025 14:34",
+    cliente: "DANIEL",
+    cp: "-",
+    telefono: "1131290000",
+    email: "1131290000FERNANDEZ@gmail.com",
+    formaPago: "99- Costo en",
+    estadoEmision: "-",
+    motivoBaja: "Seleccionar",
+    canalVenta: "Bicicleteria",
+    ultimaGestion: "11/07/2025 11:37",
+    proximoContacto: "2025-07-30",
+  },
+]
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -59,6 +344,20 @@ export default function ConsultaOperaciones() {
   const handleSubmit = (e) => {
     e.preventDefault()
     console.log("Datos del formulario:", formData)
+    setShowResults(true)
+  }
+
+  const getStatusClasses = (status) => {
+    switch (status) {
+      case "Pending":
+        return "bg-orange-100 text-orange-800"
+      case "Completed":
+        return "bg-green-100 text-green-800"
+      case "Refunded":
+        return "bg-red-100 text-red-800"
+      default:
+        return "bg-gray-100 text-gray-800"
+    }
   }
 
   return (
@@ -400,7 +699,7 @@ export default function ConsultaOperaciones() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            {/* <div className="bg-white rounded-lg shadow-sm border border-gray-200">
               <div className="p-6">
                 <ConsultaOperacionesForm
                   formData={formData}
@@ -408,7 +707,259 @@ export default function ConsultaOperaciones() {
                   onSubmit={handleSubmit}
                 />
               </div>
-            </div>
+            </div> */}
+
+            {/* Results Table */}
+            {showResults && (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 mt-6 overflow-x-auto">
+                <div className="p-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-4">Resultados de Operaciones</h2>
+                </div>
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg"
+                      >
+                        <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Nro
+                        <ArrowDownUp className="inline-block ml-1 h-3 w-3" />
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Productos Contratados
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Vendedor
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Fecha
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Primera gestión
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Cliente
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        CP
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Teléfono
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Email
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Forma pago
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Estado
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Estado de emisión
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Motivo baja
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Canal venta
+                        <ArrowDownUp className="inline-block ml-1 h-3 w-3" />
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Ultima gestion
+                        <ArrowDownUp className="inline-block ml-1 h-3 w-3" />
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        Proximo contacto
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg"
+                      >
+                        Acción
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {operationsData.map((row, index) => (
+                      <tr key={index} className="hover:bg-gray-50 text-sm">
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-600 rounded" />
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900 font-medium">{row.nro}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900 ">{row.producto}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900">
+                          <select
+                            value={row.vendedor}
+                            className="w-full rounded-md border border-gray-300 py-1 px-2 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          >
+                            <option value="Adriana Suarez">Adriana Suarez</option>
+                            <option value="Otro Vendedor">Otro Vendedor</option>
+                          </select>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900">{row.fecha}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900">{row.primeraGestion}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900">
+                          <div className="flex items-center gap-2">
+                            <UserCircle />
+                            <span>{row.cliente}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900">{row.cp}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900">{row.telefono}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900">{row.email}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900">{row.formaPago}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900">
+                          <span
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClasses(row.status)}`}
+                          >
+                            {row.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900">{row.estadoEmision}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900">
+                          <select
+                            value={row.motivoBaja}
+                            className="w-full rounded-md border border-gray-300 py-1 px-2 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          >
+                            <option value="Seleccionar">Seleccionar</option>
+                          </select>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <select
+                            value={row.canalVenta}
+                            className="w-full rounded-md border border-gray-300 py-1 px-2 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          >
+                            <option value="Whatsapp">Whatsapp</option>
+                            <option value="Bicicleteria">Bicicleteria</option>
+                          </select>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900">{row.ultimaGestion}</td>
+                        <td className="px-4 py-3 whitespace-nowrap text-gray-900">
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="date"
+                              value={row.proximoContacto}
+                              className="w-28 rounded-md border border-gray-300 py-1 px-2 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex items-center space-x-2">
+                            <button className="text-gray-600 hover:text-blue-600 p-1 rounded-md hover:bg-gray-100">
+                              <Edit className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {/* Pagination */}
+                <nav className="flex items-center justify-between px-4 py-3 sm:px-6">
+                  <div className="flex-1 flex justify-between sm:hidden">
+                    <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                      Previous
+                    </button>
+                    <button className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                      Next
+                    </button>
+                  </div>
+                  <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm text-gray-700">
+                        Mostrando <span className="font-medium">1</span> a <span className="font-medium">15</span> de{" "}
+                        <span className="font-medium">240</span> entradas
+                      </p>
+                    </div>
+                    <div>
+                      <nav
+                        className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                        aria-label="Pagination"
+                      >
+                        <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                          <span className="sr-only">Previous</span>
+                          <ChevronDown className="h-5 w-5 rotate-90" aria-hidden="true" />
+                        </button>
+                        <button
+                          aria-current="page"
+                          className="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium"
+                        >
+                          1
+                        </button>
+                        <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                          2
+                        </button>
+                        <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                          3
+                        </button>
+                        <span className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                          ...
+                        </span>
+                        <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                          12
+                        </button>
+                        <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                          <span className="sr-only">Next</span>
+                          <ChevronDown className="h-5 w-5 -rotate-90" aria-hidden="true" />
+                        </button>
+                      </nav>
+                    </div>
+                  </div>
+                </nav>
+              </div>
+            )}
 
           </div>
         </main>

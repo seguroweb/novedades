@@ -1,16 +1,13 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import "../../globals.css";
 import HeaderDashboard from "@/app/components/HeaderDashboard";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'], // los pesos que vas a usar
+  variable: '--font-dm-sans',    // nombre de la variable CSS (opcional)
+  display: 'swap',
+})
 
 export const metadata = {
   title: "Create Next App",
@@ -19,10 +16,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="es" className={`${dmSans.variable} antialiased`}>
+      <body>
         <HeaderDashboard sistema="Novedades" />
         {children}
       </body>
