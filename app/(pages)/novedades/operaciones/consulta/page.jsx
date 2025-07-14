@@ -539,7 +539,7 @@ export default function ConsultaOperaciones() {
                             scope="col"
                             className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
-                            Productos Contratados
+                            Producto
                           </th>
                           <th
                             scope="col"
@@ -642,9 +642,9 @@ export default function ConsultaOperaciones() {
                               <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-600 rounded" />
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap text-gray-900 font-medium">{row.numero}</td>
-                            <td className="px-4 py-3 whitespace-nowrap">{row.producto}</td>
+                            <td className="px-4 py-3 whitespace-nowrap">{row?.product.descripcion}</td>
                             <td className="px-4 py-3 whitespace-nowrap">
-                              {row.vendedor}
+                              {row?.seller?.nombre}
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap">{row.fecha}</td>
                             <td className="px-4 py-3 whitespace-nowrap">{row.primeraGestion}</td>
@@ -657,31 +657,20 @@ export default function ConsultaOperaciones() {
                             <td className="px-4 py-3 whitespace-nowrap">{row.codigo_postal}</td>
                             <td className="px-4 py-3 whitespace-nowrap">{row.telefono}</td>
                             <td className="px-4 py-3 whitespace-nowrap">{row.email}</td>
-                            <td className="px-4 py-3 whitespace-nowrap">{row.forma_pago}</td>
+                            <td className="px-4 py-3 whitespace-nowrap">{row?.paymentMethod?.description ?? '-'}</td>
                             <td className="px-4 py-3 whitespace-nowrap">
                               <span
                                 className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClasses(row.status)}`}
                               >
-                                {row.estado}
+                                {row.status.descripcion}
                               </span>
                             </td>
-                            <td className="px-4 py-3 whitespace-nowrap">{row.estadoac}</td>
+                            <td className="px-4 py-3 whitespace-nowrap">{row?.acStatus?.descripcion ?? '-'}</td>
                             <td className="px-4 py-3 whitespace-nowrap">
-                              <select
-                                value={row.motivoBaja}
-                                className="w-full rounded-md border border-gray-300 py-1 px-2 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                              >
-                                <option value="Seleccionar">Seleccionar</option>
-                              </select>
+                              {row?.cancellationReason?.descripcion ?? '-'}
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap">
-                              <select
-                                value={row.canalVenta}
-                                className="w-full rounded-md border border-gray-300 py-1 px-2 text-xs focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                              >
-                                <option value="Whatsapp">Whatsapp</option>
-                                <option value="Bicicleteria">Bicicleteria</option>
-                              </select>
+                              {row.channel.descripcion}
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap">{row.ultimaGestion}</td>
                             <td className="px-4 py-3 whitespace-nowrap">

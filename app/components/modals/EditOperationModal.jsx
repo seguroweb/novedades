@@ -47,7 +47,7 @@ export function EditOperationModal({ isOpen, onClose, operationData, onSave }) {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Producto:</label>
-                <p className="mt-1 text-sm text-gray-900 font-semibold">{formData.producto}</p>
+                <p className="mt-1 text-sm text-gray-900 font-semibold">{formData.product.descripcion}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Fecha:</label>
@@ -55,7 +55,7 @@ export function EditOperationModal({ isOpen, onClose, operationData, onSave }) {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Estado:</label>
-                <p className="mt-1 text-sm text-gray-900 font-semibold">{formData.estado}</p>
+                <p className="mt-1 text-sm text-gray-900 font-semibold">{formData.status.descripcion}</p>
               </div>
             </div>
           </div>
