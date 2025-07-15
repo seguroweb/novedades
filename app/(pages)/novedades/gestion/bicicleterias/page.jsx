@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Bell,
   ChevronDown,
@@ -316,6 +316,9 @@ export default function Bicicleterias() {
     vendedor: "Todos",
     ordenadoPor: "Bicicleteria",
   })
+  const [bicicleterias, setBicicleterias] = useState([])
+  const [isLoading, setIsLoading] = useState(false) // State for loading indicator
+  const [fetchError, setFetchError] = useState(null) // State for fetch errors
 
   // Función para manejar cambios en los filtros
   const handleFiltroChange = (e) => {
@@ -332,6 +335,34 @@ export default function Bicicleterias() {
     console.log("Realizando búsqueda con filtros:", filtros)
     // Aquí iría la lógica para buscar en la API
   }
+
+  const fetchBicicleterias = async () => {
+    setIsLoading(true)
+    setFetchError(null)
+    setBicicleterias([]) // Clear previous results
+    try {
+      console.log("HELLO")
+      // Replace with your actual backend URL
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bikeshops`)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      const bicicleterias = await response.json()
+      console.log(bicicleterias)
+      // Assuming the backend returns data in a format similar to operationsData
+      // You might need to transform the data here if the backend structure is different
+      setBicicleterias(bicicleterias)
+    } catch (error) {
+      console.error("Error fetching operations:", error)
+      setFetchError("Error al cargar las operaciones. Por favor, inténtelo de nuevo.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchBicicleterias()
+  }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -382,20 +413,6 @@ export default function Bicicleterias() {
                 <h1 className="text-2xl font-bold text-gray-900">Bicicleterías</h1>
               </div>
               <p className="text-gray-600">Gestión de bicicleterías y sus comisiones</p>
-            </div>
-
-            {/* Selector de vendedor */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                <div className="mb-4 md:mb-0">
-                  <h2 className="text-lg font-semibold text-gray-900">Bienvenido {userInfo.name}</h2>
-                </div>
-                <div className="w-full md:w-64">
-                  <select className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                    <option>Seleccionar</option>
-                  </select>
-                </div>
-              </div>
             </div>
 
             {/* Formulario de búsqueda */}
@@ -505,35 +522,6 @@ export default function Bicicleterias() {
               </form>
             </div>
 
-            {/* Tabla de estados */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden mb-6">
-              <div className="border-b border-gray-200 px-4 py-3">
-                <h2 className="font-medium text-gray-900">Estado</h2>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="bg-gray-50 border-b border-gray-200">
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-900">Estado</th>
-                      <th className="px-4 py-2 text-right text-sm font-medium text-gray-900">Cantidad</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {estadosData.map((estado, index) => (
-                      <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
-                        <td className="px-4 py-2 text-sm text-gray-900">{estado.estado}</td>
-                        <td className="px-4 py-2 text-sm text-gray-900 text-right">{estado.cantidad}</td>
-                      </tr>
-                    ))}
-                    <tr className="bg-gray-50 font-medium">
-                      <td className="px-4 py-2 text-sm text-gray-900">Total</td>
-                      <td className="px-4 py-2 text-sm text-gray-900 text-right">{totalEstados}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
             {/* Tabs */}
             <div className="mb-4 border-b border-gray-200">
               <div className="flex">
@@ -567,59 +555,135 @@ export default function Bicicleterias() {
                   <h2 className="font-medium text-gray-900">Comisiones Bicicleterias</h2>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="bg-gray-50 border-b border-gray-200">
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Bicicleteria</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Provincia</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Localidad</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Vendedor</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Producto</th>
-                        <th className="px-2 py-3 text-right text-xs font-medium text-gray-900">Cotizaciones</th>
-                        <th className="px-2 py-3 text-right text-xs font-medium text-gray-900">Contratado Total</th>
-                        <th className="px-2 py-3 text-right text-xs font-medium text-gray-900">En emisión Total</th>
-                        <th className="px-2 py-3 text-right text-xs font-medium text-gray-900">% Venta Cotizaciones</th>
-                        <th className="px-2 py-3 text-right text-xs font-medium text-gray-900">Premio</th>
-                        <th className="px-2 py-3 text-right text-xs font-medium text-gray-900">Prima</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Forma Pago</th>
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Bicicleteria
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Provincia
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Localidad
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Vendedor
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Producto
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Cotizaciones
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Contratado Total
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          En emisión Total
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          % Venta Cotizaciones
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Premio
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Prima
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Forma Pago
+                        </th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="bg-white divide-y divide-gray-200">
                       {comisionesData.map((item, index) => (
-                        <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.bicicleteria}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.provincia}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.localidad}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.vendedor}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.producto}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900 text-right">{item.cotizaciones}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900 text-right">{item.contratadoTotal}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900 text-right">{item.enEmisionTotal}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900 text-right">{item.porcentajeVenta}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900 text-right">{item.premio.toLocaleString()}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900 text-right">{item.prima.toLocaleString()}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.formaPago}</td>
+                        <tr key={index}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.bicicleteria}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.provincia}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.localidad}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.vendedor}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.producto}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+                            {item.cotizaciones}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+                            {item.contratadoTotal}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+                            {item.enEmisionTotal}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+                            {item.porcentajeVenta}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+                            {item.premio.toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+                            {item.prima.toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.formaPago}</td>
                         </tr>
                       ))}
-                      <tr className="bg-gray-50 font-medium">
-                        <td colSpan={5} className="px-2 py-2 text-xs text-gray-900">
+                      <tr className="bg-gray-50">
+                        <td colSpan={5} className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           Total
                         </td>
-                        <td className="px-2 py-2 text-xs text-gray-900 text-right">{totalComisiones.cotizaciones}</td>
-                        <td className="px-2 py-2 text-xs text-gray-900 text-right">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
+                          {totalComisiones.cotizaciones}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
                           {totalComisiones.contratadoTotal}
                         </td>
-                        <td className="px-2 py-2 text-xs text-gray-900 text-right">{totalComisiones.enEmisionTotal}</td>
-                        <td className="px-2 py-2 text-xs text-gray-900 text-right">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
+                          {totalComisiones.enEmisionTotal}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
                           {totalComisiones.porcentajeVenta}
                         </td>
-                        <td className="px-2 py-2 text-xs text-gray-900 text-right">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
                           {totalComisiones.premio.toLocaleString()}
                         </td>
-                        <td className="px-2 py-2 text-xs text-gray-900 text-right">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-right">
                           {totalComisiones.prima.toLocaleString()}
                         </td>
-                        <td className="px-2 py-2 text-xs text-gray-900"></td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"></td>
                       </tr>
                     </tbody>
                   </table>
@@ -634,40 +698,119 @@ export default function Bicicleterias() {
                   <h2 className="font-medium text-gray-900">Listado</h2>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="bg-gray-50 border-b border-gray-200">
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Nro</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Producto</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Vendedor</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Bicicleteria</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Fecha Ingreso</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Cliente</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Teléfono</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Email</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Estado</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Motivo baja</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Canal venta</th>
-                        <th className="px-2 py-3 text-left text-xs font-medium text-gray-900">Ultima gestión</th>
-                        <th className="px-2 py-3 text-right text-xs font-medium text-gray-900">Prima</th>
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Nro
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Producto
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Vendedor
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Bicicleteria
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Fecha Ingreso
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Cliente
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Teléfono
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Email
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Estado
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Motivo baja
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Canal venta
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Ultima gestión
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500"
+                        >
+                          Prima
+                        </th>
                       </tr>
                     </thead>
-                    <tbody>
-                      {listadoData.map((item, index) => (
-                        <tr key={index} className="border-b border-gray-200 hover:bg-gray-50">
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.nro}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.producto}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.vendedor}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.bicicleteria}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.fechaIngreso}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.cliente}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.telefono}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.email}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.estado}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.motivoBaja}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.canalVenta}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900">{item.ultimaGestion}</td>
-                          <td className="px-2 py-2 text-xs text-gray-900 text-right">{item.prima.toLocaleString()}</td>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {bicicleterias.map((item, index) => (
+                        <tr key={index}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.id}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.producto}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.vendedor}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.nombre}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.fecha_ing}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.cliente}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.telefono}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.email}</td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                item.estado === "8- Contratado"
+                                  ? "bg-green-100 text-green-800"
+                                  : item.estado === "7- Pendiente de Cierre"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-red-100 text-red-800"
+                              }`}
+                            >
+                              {item.estado}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.motivobaja}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.canal}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.fechaug}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+                            {item?.prima?.toLocaleString()}
+                          </td>
                         </tr>
                       ))}
                     </tbody>

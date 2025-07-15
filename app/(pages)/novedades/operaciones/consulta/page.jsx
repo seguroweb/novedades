@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import {
   Bell,
   Calendar,
@@ -33,6 +33,8 @@ import {
   UserCircle,
   Filter,
   UserCircleIcon,
+  ArrowDown,
+  CalendarDays,
 } from "lucide-react"
 import Link from "next/link"
 import Sidebar from "@/app/components/Sidebar"
@@ -41,6 +43,10 @@ import ConsultaOperacionesForm from "@/app/components/forms/ConsultaOperacionesF
 import { API_URL } from "@/app/constants/api"
 import { TableSkeleton } from "./loading"
 import { EditOperationModal } from "@/app/components/modals/EditOperationModal"
+import Button from "@/app/components/Button"
+import Pagination from "@/app/components/Pagination"
+import { useRouter, useSearchParams } from "next/navigation"
+import useFilters from "@/app/hooks/useFilters"
 
 // Componente principal de Consulta de Operaciones
 export default function ConsultaOperaciones() {
@@ -53,30 +59,73 @@ export default function ConsultaOperaciones() {
   const [isModalOpen, setIsModalOpen] = useState(false) // State for modal visibility
   const [selectedOperation, setSelectedOperation] = useState(null) // State to hold data of the operation being edited
 
-  const [formData, setFormData] = useState({
-    buscarPor: "Fecha",
-    tipo: "Vendedor",
-    estados: "Abiertos",
-    fechaDesde: "2025-05-26",
-    fechaHasta: "2025-06-10",
-    formaPago: "Todas",
-    estado: "Todos",
-    producto: "Todos",
-    compania: "Todos",
-    tipoOperaciones: "Todas",
-    canalesVenta: "Todos",
-    ranking: "Todos",
-    opciones: "Vendedor actual",
-  })
+  // States for custom dropdowns
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false)
+  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false)
+  
+  // Refs for click outside detection
+  const filterButtonRef = useRef(null)
+  const filterMenuRef = useRef(null)
+  const sortButtonRef = useRef(null)
+  const sortMenuRef = useRef(null)
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
+  // Paginación
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const pageParam = searchParams.get('page')
+  const [page, setPage] = useState(Number(pageParam) || 1)
+  const [limit] = useState(10) 
+  const [total, setTotal] = useState(50)
+
+  const handlePageChange = (newPage) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('page', newPage)
+    router.push(`?${params.toString()}`)
+    setPage(newPage)
   }
 
+  useEffect(() => {
+    setPage(Number(pageParam) || 1)
+  }, [pageParam])
+  
+  const [formData, setFormData] = useState({
+    buscarPor: "",
+    tipo: "",
+    estados: "",
+    fechaDesde: "",
+    fechaHasta: "",
+    formaPago: "",
+    estado: "",
+    producto: "",
+    compania: "",
+    tipoOperaciones: "",
+    canalesVenta: "",
+    ranking: "",
+    opciones: "",
+  })
+
+  useEffect(() => {
+    const initialData = {
+      buscarPor: searchParams.get('buscarPor') || '',
+      tipo: searchParams.get('tipo') || '',
+      estados: searchParams.get('estados') || '',
+      fechaDesde: searchParams.get('fechaDesde') || '',
+      fechaHasta: searchParams.get('fechaHasta') || '',
+      formaPago: searchParams.get('formaPago') || '',
+      estado: searchParams.get('estado') || '',
+      producto: searchParams.get('producto') || '',
+      compania: searchParams.get('compania') || '',
+      tipoOperaciones: searchParams.get('tipoOperaciones') || '',
+      canalesVenta: searchParams.get('canalesVenta') || '',
+      ranking: searchParams.get('ranking') || '',
+      opciones: searchParams.get('opciones') || '',
+    }
+    setFormData(initialData)
+  }, [])
+
+  const { filters, handleChange, handleSubmit } = useFilters(formData)
+  
   const getStatusClasses = (status) => {
     switch (status) {
       case "Pending":
@@ -92,20 +141,24 @@ export default function ConsultaOperaciones() {
 
   // Function to fetch operations from the backend
   const fetchOperations = async () => {
+    const params = new URLSearchParams(searchParams.toString())
+
     setIsLoading(true)
     setFetchError(null)
     setOperations([]) // Clear previous results
     try {
       // Replace with your actual backend URL
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/operations`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/operations?page=${page}&limit=${limit}`)
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
-      const data = await response.json()
-      console.log(data)
+      const operaciones = await response.json()
+      console.log(operaciones)
       // Assuming the backend returns data in a format similar to operationsData
       // You might need to transform the data here if the backend structure is different
-      setOperations(data)
+      setOperations(operaciones.data)
+      setTotal(operaciones.total)
     } catch (error) {
       console.error("Error fetching operations:", error)
       setFetchError("Error al cargar las operaciones. Por favor, inténtelo de nuevo.")
@@ -114,16 +167,16 @@ export default function ConsultaOperaciones() {
     }
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log("Datos del formulario:", formData)
-    setShowResults(true) // Show the results section container
-    fetchOperations() // Trigger data fetch
-  }
+  // const handleSubmit = (e) => {
+  //   e.preventDefault()
+  //   console.log("Datos del formulario:", formData)
+  //   //setShowResults(true) // Show the results section container
+  //   fetchOperations() // Trigger data fetch
+  // }
 
   useEffect(() => {
     fetchOperations()
-  }, [])
+  }, [page, searchParams])
 
   const handleEditClick = (operation) => {
     setSelectedOperation(operation)
@@ -144,6 +197,35 @@ export default function ConsultaOperaciones() {
     )
     handleModalClose()
   }
+
+    // Click outside logic for filter and sort menus
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        // Filter menu
+        if (
+          filterMenuRef.current &&
+          !filterMenuRef.current.contains(event.target) &&
+          filterButtonRef.current &&
+          !filterButtonRef.current.contains(event.target)
+        ) {
+          setIsFilterMenuOpen(false)
+        }
+        // Sort menu
+        if (
+          sortMenuRef.current &&
+          !sortMenuRef.current.contains(event.target) &&
+          sortButtonRef.current &&
+          !sortButtonRef.current.contains(event.target)
+        ) {
+          setIsSortMenuOpen(false)
+        }
+      }
+  
+      document.addEventListener("mousedown", handleClickOutside)
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside)
+      }
+    }, [])
 
   return (
     <div className="min-h-screen bg-gray-50">      
@@ -249,7 +331,7 @@ export default function ConsultaOperaciones() {
                           id="buscarPor"
                           name="buscarPor"
                           value={formData.buscarPor}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         >
                           <option value="Fecha">Fecha</option>
@@ -267,7 +349,7 @@ export default function ConsultaOperaciones() {
                               name="tipo"
                               value="Vendedor"
                               checked={formData.tipo === "Vendedor"}
-                              onChange={handleInputChange}
+                              onChange={handleChange}
                               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                             />
                             <span className="ml-2 text-sm text-gray-700">Vendedor</span>
@@ -278,7 +360,7 @@ export default function ConsultaOperaciones() {
                               name="tipo"
                               value="At.cliente"
                               checked={formData.tipo === "At.cliente"}
-                              onChange={handleInputChange}
+                              onChange={handleChange}
                               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                             />
                             <span className="ml-2 text-sm text-gray-700">At.cliente</span>
@@ -294,7 +376,7 @@ export default function ConsultaOperaciones() {
                           id="estados"
                           name="estados"
                           value={formData.estados}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         >
                           <option value="Abiertos">Abiertos</option>
@@ -316,7 +398,7 @@ export default function ConsultaOperaciones() {
                             id="fechaDesde"
                             name="fechaDesde"
                             value={formData.fechaDesde}
-                            onChange={handleInputChange}
+                            onChange={handleChange}
                             className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                           <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
@@ -333,7 +415,7 @@ export default function ConsultaOperaciones() {
                             id="fechaHasta"
                             name="fechaHasta"
                             value={formData.fechaHasta}
-                            onChange={handleInputChange}
+                            onChange={handleChange}
                             className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
                           <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-gray-400 pointer-events-none" />
@@ -351,7 +433,7 @@ export default function ConsultaOperaciones() {
                           id="formaPago"
                           name="formaPago"
                           value={formData.formaPago}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         >
                           <option value="Todas">Todas</option>
@@ -369,7 +451,7 @@ export default function ConsultaOperaciones() {
                           id="estado"
                           name="estado"
                           value={formData.estado}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         >
                           <option value="Todos">Todos</option>
@@ -387,7 +469,7 @@ export default function ConsultaOperaciones() {
                           id="producto"
                           name="producto"
                           value={formData.producto}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         >
                           <option value="Todos">Todos</option>
@@ -408,7 +490,7 @@ export default function ConsultaOperaciones() {
                           id="compania"
                           name="compania"
                           value={formData.compania}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         >
                           <option value="Todos">Todos</option>
@@ -426,7 +508,7 @@ export default function ConsultaOperaciones() {
                           id="tipoOperaciones"
                           name="tipoOperaciones"
                           value={formData.tipoOperaciones}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         >
                           <option value="Todas">Todas</option>
@@ -444,7 +526,7 @@ export default function ConsultaOperaciones() {
                           id="canalesVenta"
                           name="canalesVenta"
                           value={formData.canalesVenta}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         >
                           <option value="Todos">Todos</option>
@@ -465,7 +547,7 @@ export default function ConsultaOperaciones() {
                           id="ranking"
                           name="ranking"
                           value={formData.ranking}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         >
                           <option value="Todos">Todos</option>
@@ -483,7 +565,7 @@ export default function ConsultaOperaciones() {
                           id="opciones"
                           name="opciones"
                           value={formData.opciones}
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                           className="w-full rounded-md border border-gray-300 py-2 px-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         >
                           <option value="Vendedor actual">Vendedor actual</option>
@@ -508,9 +590,178 @@ export default function ConsultaOperaciones() {
               )}
             </div>
 
+            {/* Table Header with Filter and Sort Buttons */}
+            <div className="flex justify-end gap-2 mb-4 mt-4 relative">
+              {/* Sort Button and Dropdown */}
+              <div className="relative">
+                <Button
+                  ref={sortButtonRef}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                >
+                  <ArrowDown className="h-4 w-4" />
+                  Ordenar
+                </Button>
+                {isSortMenuOpen && (
+                  <div
+                    ref={sortMenuRef}
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-10"
+                  >
+                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Fecha (Más reciente)
+                    </button>
+                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Fecha (Más antigua)
+                    </button>
+                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Cliente (A-Z)
+                    </button>
+                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Cliente (Z-A)
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Filter Button and Dropdown */}
+              <div className="relative">
+                <Button
+                  ref={filterButtonRef}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+                >
+                  <Filter className="h-4 w-4" />
+                  Filtrar
+                </Button>
+                {isFilterMenuOpen && (
+                  <div
+                    ref={filterMenuRef}
+                    className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-100 p-4 z-10"
+                  >
+                    <h4 className="text-base font-semibold leading-none mb-4">Filter</h4>
+
+                    {/* Date range */}
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <label className="block text-sm font-medium text-gray-700">Date range</label>
+                        <button type="button" className="text-blue-600 text-sm hover:underline">
+                          Reset
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label htmlFor="filterDateFrom" className="block text-xs text-gray-500 mb-1">
+                            From:
+                          </label>
+                          <div className="relative">
+                            <input type="date" id="filterDateFrom" className="w-full text-sm pr-8" />
+                            <CalendarDays className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                          </div>
+                        </div>
+                        <div>
+                          <label htmlFor="filterDateTo" className="block text-xs text-gray-500 mb-1">
+                            To:
+                          </label>
+                          <div className="relative">
+                            <input type="date" id="filterDateTo" className="w-full text-sm pr-8" />
+                            <CalendarDays className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Activity type */}
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <label htmlFor="activityType" className="block text-sm font-medium text-gray-700">
+                          Activity type
+                        </label>
+                        <button type="button" className="text-blue-600 text-sm hover:underline">
+                          Reset
+                        </button>
+                      </div>
+                      <select
+                        id="activityType"
+                        className="w-full rounded-md border border-gray-300 py-2 px-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option>All warehouses</option>
+                        <option>Warehouse A</option>
+                        <option>Warehouse B</option>
+                      </select>
+                    </div>
+
+                    {/* Status */}
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <label htmlFor="status" className="block text-sm font-medium text-gray-700">
+                          Status
+                        </label>
+                        <button type="button" className="text-blue-600 text-sm hover:underline">
+                          Reset
+                        </button>
+                      </div>
+                      <select
+                        id="status"
+                        className="w-full rounded-md border border-gray-300 py-2 px-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option>Active</option>
+                        <option>Inactive</option>
+                        <option>Pending</option>
+                      </select>
+                    </div>
+
+                    {/* Keyword search */}
+                    <div className="mb-6">
+                      <div className="flex justify-between items-center mb-2">
+                        <label htmlFor="keywordSearch" className="block text-sm font-medium text-gray-700">
+                          Keyword search
+                        </label>
+                        <button type="button" className="text-blue-600 text-sm hover:underline">
+                          Reset
+                        </button>
+                      </div>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <input
+                          type="text"
+                          id="keywordSearch"
+                          placeholder="Search..."
+                          className="w-full text-sm py-2 pl-10 pr-4"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex justify-between gap-2">
+                      <button
+                        type="button"
+                        className="flex-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-md font-medium text-sm transition-colors"
+                      >
+                        Reset all
+                      </button>
+                      <button
+                        type="button"
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors"
+                        onClick={() => setIsFilterMenuOpen(false)} // Close on apply
+                      >
+                        Apply now
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Results Table */}
             {showResults && (
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 mt-6 overflow-x-auto">
+                <div className="border-b border-gray-200 px-4 py-3">
+                  <h2 className="font-medium text-gray-900">Operaciones</h2>
+                </div>
                 {isLoading ? (
                   <TableSkeleton />
                 ) : fetchError ? (
@@ -693,22 +944,33 @@ export default function ConsultaOperaciones() {
                         ))}
                       </tbody>
                     </table>
+
                     {/* Pagination */}
-                    <nav className="flex items-center justify-between px-4 py-3 sm:px-6">
+                    {/* <nav className="flex items-center justify-between px-4 py-3 sm:px-6">
                       <div className="flex-1 flex justify-between sm:hidden">
-                        <button className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                          Previous
-                        </button>
-                        <button className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                          Next
-                        </button>
+                      <button
+                        onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={page === 1}
+                        className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                      >
+                        Anterior
+                      </button>
+
+                      <button
+                        onClick={() => setPage((prev) => prev + 1)}
+                        disabled={page * limit >= total}
+                        className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                      >
+                        Siguiente
+                      </button>
+
                       </div>
                       <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                         <div>
                           <p className="text-sm text-gray-700">
-                            Mostrando <span className="font-medium">1</span> a{" "}
-                            <span className="font-medium">{operations.length}</span> de{" "}
-                            <span className="font-medium">{operations.length}</span> entradas
+                            Mostrando <span className="font-medium">{(page - 1) * limit + 1}</span> a{" "}
+                            <span className="font-medium">{Math.min(page * limit, total)}</span> de{" "}
+                            <span className="font-medium">{total}</span> entradas
                           </p>
                         </div>
                         <div>
@@ -716,7 +978,7 @@ export default function ConsultaOperaciones() {
                             className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
                             aria-label="Pagination"
                           >
-                            <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <button className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" onClick={() => setPage((prev) => Math.max(prev - 1, 1))}>
                               <span className="sr-only">Previous</span>
                               <ChevronDown className="h-5 w-5 rotate-90" aria-hidden="true" />
                             </button>
@@ -726,14 +988,15 @@ export default function ConsultaOperaciones() {
                             >
                               1
                             </button>
-                            <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                            <button className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50" onClick={() => setPage((prev) => prev + 1)}>
                               <span className="sr-only">Next</span>
                               <ChevronDown className="h-5 w-5 -rotate-90" aria-hidden="true" />
                             </button>
                           </nav>
                         </div>
                       </div>
-                    </nav>
+                    </nav> */}
+                    <Pagination total={total} page={page} setPage={handlePageChange} limit={limit} />
                   </>
                 )}
               </div>

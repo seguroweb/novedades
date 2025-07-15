@@ -19,7 +19,7 @@ export const LINKS_MENU = [
       submenu: [
         { name: "Consulta", href: "/novedades/operaciones/consulta" },
         //{ name: "Crosselling", href: "/novedades/operaciones/crosselling" },
-        { name: "Solicitudes de Edición", href: "/novedades/operaciones/solicitudes" },
+        { name: "Solicitudes de Edición", href: "/novedades/operaciones/solicitudes-edicion" },
       ],
     },
     // {
