@@ -128,26 +128,26 @@ const MobileMenu = ({ isOpen, onClose, children }) => {
 
 // Componentes para el dashboard
 const WelcomeCard = ({ userName }) => (
-  <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white">
+  <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-6 text-white dark:from-blue-700 dark:to-blue-800">
     <h2 className="text-2xl font-bold">Bienvenido, {userName}</h2>
     <p className="mt-2 opacity-90">Aquí tienes un resumen de tu actividad reciente.</p>
   </div>
 )
 
 const StatsCard = ({ title, value, icon: Icon, trend }) => (
-  <div className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
+  <div className="bg-white rounded-lg border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700 dark:hover:shadow-lg">
     <div className="flex justify-between">
       <div>
-        <p className="text-sm font-medium text-gray-500">{title}</p>
-        <p className="text-2xl font-bold mt-1">{value}</p>
+        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
+        <p className="text-2xl font-bold mt-1 dark:text-gray-100">{value}</p>
         {trend && (
-          <p className={`text-xs mt-2 ${trend.isPositive ? "text-green-600" : "text-red-600"}`}>
+          <p className={`text-xs mt-2 ${trend.isPositive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
             {trend.isPositive ? "↑" : "↓"} {trend.value} desde el mes pasado
           </p>
         )}
       </div>
-      <div className="bg-blue-50 rounded-full p-3 h-fit">
-        <Icon className="h-6 w-6 text-blue-600" />
+      <div className="bg-blue-50 rounded-full p-3 h-fit dark:bg-blue-900">
+        <Icon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
       </div>
     </div>
   </div>
@@ -242,7 +242,7 @@ export default function Dashboard() {
   const { user, logout } = useAuth()
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Mobile menu */}
       <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)}>
         <Sidebar />
@@ -281,15 +281,14 @@ export default function Dashboard() {
               <StatsCard title="Eventos programados" value="5" icon={Calendar} />
             </div>
 
-            {/* Activity and events section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
                 <RecentActivityCard />
               </div>
               <div>
                 <UpcomingEventsCard />
               </div>
-            </div>
+            </div> */}
           </div>
         </main>
       </div>

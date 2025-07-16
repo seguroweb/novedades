@@ -228,7 +228,7 @@ export default function ConsultaOperaciones() {
     }, [])
 
   return (
-    <div className="min-h-screen bg-gray-50">      
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">      
       {/* Mobile menu */}
       <MobileMenu isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)}>
         <Sidebar />
@@ -248,21 +248,29 @@ export default function ConsultaOperaciones() {
             <nav className="flex mb-6" aria-label="Breadcrumb">
               <ol className="flex items-center space-x-2">
                 <li>
-                  <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
+                  <Link
+                    href="/dashboard"
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  >
                     Inicio
                   </Link>
                 </li>
                 <li>
-                  <span className="text-gray-400">/</span>
+                  <span className="text-gray-400 dark:text-gray-600">/</span>
                 </li>
                 <li>
-                  <span className="text-gray-500">Operaciones</span>
+                  <Link
+                    href="/dashboard/operaciones/consulta"
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  >
+                    Operaciones
+                  </Link>
                 </li>
                 <li>
-                  <span className="text-gray-400">/</span>
+                  <span className="text-gray-400 dark:text-gray-600">/</span>
                 </li>
                 <li>
-                  <span className="text-gray-900 font-medium">Consulta</span>
+                  <span className="text-gray-900 font-medium dark:text-gray-100">Consulta</span>
                 </li>
               </ol>
             </nav>
@@ -270,8 +278,8 @@ export default function ConsultaOperaciones() {
             {/* Page header */}
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Consulta de Operaciones</h1>
-                <p className="text-gray-600 mt-1">Busca y filtra operaciones según tus criterios</p>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Consulta de Operaciones</h1>
+                <p className="text-gray-600 mt-1 dark:text-gray-300">Busca y filtra operaciones según tus criterios</p>
               </div>
               <div className="flex gap-3">
                 <Link href={"/novedades/operaciones/consulta/nueva-operacion"}>
