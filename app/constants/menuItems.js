@@ -50,6 +50,7 @@ export const LINKS_MENU = [
         // { name: "Bicicletas por valor", href: "/novedades/gestion/bicicletas-valor" },
         // { name: "Última Gestión Vendedor", href: "/novedades/gestion/ultima-gestion-vendedor" },
         { name: "Bloquear DNI", href: "/novedades/gestion/bloquear-dni" },
+        { name: "Vendedores", href: "/novedades/gestion/vendedores" },
         // { name: "Go Digital", href: "/novedades/gestion/go-digital" },
         // { name: "Objetivos Vendedor Diario", href: "/novedades/gestion/objetivos-diario" },
         // { name: "Delivery", href: "/novedades/gestion/delivery" },
