@@ -283,7 +283,7 @@ export default function Home() {
                 <p className="text-sm text-gray-600">
                   ¿Necesitas ayuda?{" "}
                   <Link href="/contact" className="text-blue-600 hover:underline">
-                    Contacta soporte
+                    Contacta con el soporte.
                   </Link>
                 </p>
               </div>
