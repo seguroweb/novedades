@@ -35,41 +35,41 @@ const SidebarSkeleton = () => (
   </nav>
 )
 
-// New Table Skeleton Component
 export const TableSkeleton = () => (
   <div className="overflow-x-auto">
-    <table className="min-w-full divide-y divide-gray-200">
-      <thead className="bg-gray-50">
+    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <thead className="bg-gray-50 dark:bg-gray-800">
         <tr>
           {Array.from({ length: 18 }).map((_, i) => (
             <th
               key={i}
               scope="col"
-              className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
             >
-              <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20 animate-pulse" />
             </th>
           ))}
         </tr>
       </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
+      <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
         {Array.from({ length: 5 }).map((_, rowIdx) => (
           <tr key={rowIdx}>
             {Array.from({ length: 18 }).map((_, colIdx) => (
               <td key={colIdx} className="px-4 py-3 whitespace-nowrap">
-                <div className="h-4 bg-gray-100 rounded w-full animate-pulse"></div>
+                <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-full animate-pulse" />
               </td>
             ))}
           </tr>
         ))}
       </tbody>
     </table>
-    <div className="flex items-center justify-between px-4 py-3 sm:px-6 mt-4">
-      <div className="h-5 bg-gray-200 rounded w-48 animate-pulse"></div>
-      <div className="h-8 bg-gray-200 rounded w-48 animate-pulse"></div>
+    <div className="flex items-center justify-between px-4 py-3 sm:px-6 mt-4 dark:bg-gray-800 dark:border-gray-600">
+      <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-48 animate-pulse" />
+      <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 animate-pulse" />
     </div>
   </div>
 )
+
 
 export default function Loading() {
   return (

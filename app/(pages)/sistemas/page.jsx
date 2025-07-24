@@ -150,7 +150,7 @@ export default function Sistemas() {
               <Link href={system.url}>
                 <div
                   key={system.id}
-                  onClick={() => handleSystemSelect(system.id)}
+                  // onClick={() => handleSystemSelect(system.id)}
                   className="flex flex-col items-center p-6 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200 ease-in-out cursor-pointer border border-blue-200 shadow-sm dark:bg-blue-900 dark:hover:bg-blue-800 dark:border-blue-700"
                 >
                   <system.icon className="h-12 w-12 text-blue-600 mb-4 dark:text-blue-400" />

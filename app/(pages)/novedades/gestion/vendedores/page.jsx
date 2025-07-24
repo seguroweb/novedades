@@ -1,10 +1,52 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { Search, Filter, ArrowUpDown, Calendar, MoreVertical, ChevronLeft, ChevronRight, User } from "lucide-react"
-import DashboardLayout from "@/app/components/DashboardLayout"
-import { ThemeToggle } from "@/app/components/ThemeToggle"
-import { useTheme } from "@/app/contexts/ThemeContext"
+import { useState, useRef, useEffect } from "react";
+import {
+  Bell,
+  Calendar,
+  ChevronDown,
+  ClipboardList,
+  Download,
+  FileText,
+  Grid3X3,
+  HelpCircle,
+  Home,
+  LogOut,
+  Mail,
+  Menu,
+  Phone,
+  Search,
+  Settings,
+  Shield,
+  User,
+  X,
+  Eye,
+  Plus,
+  AlertTriangle,
+  ArrowDownUp,
+  Printer,
+  CheckCircle,
+  Edit,
+  Trash2,
+  MoreHorizontal,
+  User2,
+  UserCircle,
+  Filter,
+  UserCircleIcon,
+  ArrowDown,
+  CalendarDays,
+  MoreVertical,
+} from "lucide-react";
+import DashboardLayout from "@/app/components/DashboardLayout";
+import { ThemeToggle } from "@/app/components/ThemeToggle";
+import { useTheme } from "@/app/contexts/ThemeContext";
+import MobileMenu from "@/app/components/MobileMenu";
+import Link from "next/link";
+import Button from "@/app/components/Button";
+import { TableSkeleton } from "../../operaciones/consulta/loading";
+import Pagination from "@/app/components/Pagination";
+import { useRouter, useSearchParams } from "next/navigation";
+import Sidebar from "@/app/components/Sidebar";
 
 const vendors = [
   {
@@ -117,20 +159,47 @@ const vendors = [
     joiningDate: "Nov 10, 2024",
     contractType: "Part-time",
   },
-]
+];
 
 export default function VendedoresPage() {
-  const [filterMenuOpen, setFilterMenuOpen] = useState(false)
-  const [sortMenuOpen, setSortMenuOpen] = useState(false)
-  const filterButtonRef = useRef(null)
-  const sortButtonRef = useRef(null)
-  const filterMenuRef = useRef(null)
-  const sortMenuRef = useRef(null)
-  const [vendedores, setVendedores] = useState([])
-  const [isLoading, setIsLoading] = useState(false) // State for loading indicator
-  const [fetchError, setFetchError] = useState(null) // State for fetch errors
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false); // State to control filter section visibility
 
-  const { theme } = useTheme()
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+  const [sortMenuOpen, setSortMenuOpen] = useState(false);
+  const filterButtonRef = useRef(null);
+  const sortButtonRef = useRef(null);
+  const filterMenuRef = useRef(null);
+  const sortMenuRef = useRef(null);
+  const [vendedores, setVendedores] = useState([]);
+  const [isLoading, setIsLoading] = useState(false); // State for loading indicator
+  const [fetchError, setFetchError] = useState(null); // State for fetch errors
+
+  // States for custom dropdowns
+  const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
+  const [isSortMenuOpen, setIsSortMenuOpen] = useState(false);
+
+  const { theme } = useTheme();
+
+  // Paginación
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const pageParam = searchParams.get("page");
+  const [page, setPage] = useState(Number(pageParam) || 1);
+  const [limit] = useState(10);
+  const [total, setTotal] = useState(50);
+
+  const handlePageChange = (newPage) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage);
+    router.push(`?${params.toString()}`);
+    setPage(newPage);
+  };
+
+  useEffect(() => {
+    setPage(Number(pageParam) || 1);
+  }, [pageParam]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -140,7 +209,7 @@ export default function VendedoresPage() {
         filterButtonRef.current &&
         !filterButtonRef.current.contains(event.target)
       ) {
-        setFilterMenuOpen(false)
+        setFilterMenuOpen(false);
       }
       if (
         sortMenuRef.current &&
@@ -148,317 +217,462 @@ export default function VendedoresPage() {
         sortButtonRef.current &&
         !sortButtonRef.current.contains(event.target)
       ) {
-        setSortMenuOpen(false)
+        setSortMenuOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
-  const getContractTypeClasses = (type) => {
-    switch (type) {
-      case "Full-time":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-      case "Freelance":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-      case "Internship":
-        return "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-      case "Part-time":
-        return "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200"
+  const getActiveClasses = (baja) => {
+    switch (baja) {
+      case "N":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200";
     }
-  }
-
-  const getDepartmentDotClasses = (department) => {
-    switch (department) {
-      case "Finance":
-        return "bg-yellow-500"
-      case "Engineer":
-        return "bg-blue-500"
-      case "Product":
-        return "bg-purple-500"
-      case "Marketing":
-        return "bg-green-500"
-      default:
-        return "bg-gray-500"
-    }
-  }
+  };
 
   const fetchVendedores = async () => {
-    setIsLoading(true)
-    setFetchError(null)
-    setVendedores([]) // Clear previous results
+    setIsLoading(true);
+    setFetchError(null);
+    setVendedores([]); // Clear previous results
     try {
-      console.log("HELLO")
+      console.log("HELLO");
       // Replace with your actual backend URL
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/sellers`)
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/sellers`
+      );
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const vendedores = await response.json()
-      console.log(vendedores)
+      const vendedores = await response.json();
+      console.log(vendedores);
       // Assuming the backend returns data in a format similar to operationsData
       // You might need to transform the data here if the backend structure is different
-      setVendedores(vendedores)
+      setVendedores(vendedores);
     } catch (error) {
-      console.error("Error fetching operations:", error)
-      setFetchError("Error al cargar las operaciones. Por favor, inténtelo de nuevo.")
+      console.error("Error fetching operations:", error);
+      setFetchError(
+        "Error al cargar las operaciones. Por favor, inténtelo de nuevo."
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchVendedores()
-  }, [])
+    fetchVendedores();
+  }, []);
 
   return (
-    <DashboardLayout>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Vendedores</h1>
-          <p className="text-gray-600 dark:text-gray-400">Visualiza y gestiona la lista de vendedores.</p>
-        </div>
-        <ThemeToggle />
-      </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Mobile menu */}
+      <MobileMenu
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      >
+        <Sidebar />
+      </MobileMenu>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2 text-gray-700 dark:text-gray-200">
-            <User className="h-5 w-5" />
-            <span className="font-medium">Total Vendedores: {vendors.length} personas</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-              <input
-                type="text"
-                placeholder="Buscar nómina o nombre..."
-                className="w-full rounded-md border border-gray-300 py-2 pl-10 pr-4 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 dark:focus:border-blue-400 dark:focus:ring-blue-400"
-              />
-            </div>
-            <div className="relative">
-              <button
-                ref={filterButtonRef}
-                onClick={() => setFilterMenuOpen(!filterMenuOpen)}
-                className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 dark:focus:ring-offset-gray-800"
-              >
-                <Filter className="h-4 w-4" />
-                <span>Filtros</span>
-              </button>
-              {filterMenuOpen && (
-                <div
-                  ref={filterMenuRef}
-                  className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800 dark:ring-gray-700"
-                  role="menu"
-                  aria-orientation="vertical"
-                  aria-labelledby="menu-button"
-                  tabIndex="-1"
-                >
-                  <div className="py-1" role="none">
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                      role="menuitem"
-                      tabIndex="-1"
-                      id="menu-item-0"
-                    >
-                      Opción de filtro 1
-                    </a>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                      role="menuitem"
-                      tabIndex="-1"
-                      id="menu-item-1"
-                    >
-                      Opción de filtro 2
-                    </a>
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="relative">
-              <button
-                ref={sortButtonRef}
-                onClick={() => setSortMenuOpen(!sortMenuOpen)}
-                className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 dark:focus:ring-offset-gray-800"
-              >
-                <ArrowUpDown className="h-4 w-4" />
-                <span>Ordenar</span>
-              </button>
-              {sortMenuOpen && (
-                <div
-                  ref={sortMenuRef}
-                  className="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800 dark:ring-gray-700"
-                  role="menu"
-                  aria-orientation="vertical"
-                  aria-labelledby="menu-button"
-                  tabIndex="-1"
-                >
-                  <div className="py-1" role="none">
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                      role="menuitem"
-                      tabIndex="-1"
-                      id="menu-item-0"
-                    >
-                      Ordenar por Nombre
-                    </a>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-                      role="menuitem"
-                      tabIndex="-1"
-                      id="menu-item-1"
-                    >
-                      Ordenar por Fecha
-                    </a>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+      {/* Main content */}
+      <div className="flex">
+        {/* Desktop sidebar */}
+        <div className="hidden lg:block w-64 border-r border-gray-200 h-[calc(100vh-64px)] sticky top-16">
+          <Sidebar />
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300"
+        {/* Main content */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto">
+            {/* Breadcrumb */}
+            <nav className="flex mb-6" aria-label="Breadcrumb">
+              <ol className="flex items-center space-x-2">
+                <li>
+                  <Link
+                    href="/dashboard"
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  >
+                    Inicio
+                  </Link>
+                </li>
+                <li>
+                  <span className="text-gray-400 dark:text-gray-600">/</span>
+                </li>
+                <li>
+                  <Link
+                    href="/dashboard/operaciones/consulta"
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  >
+                    Operaciones
+                  </Link>
+                </li>
+                <li>
+                  <span className="text-gray-400 dark:text-gray-600">/</span>
+                </li>
+                <li>
+                  <span className="text-gray-900 font-medium dark:text-gray-100">
+                    Consulta
+                  </span>
+                </li>
+              </ol>
+            </nav>
+
+            {/* Page header */}
+            <div className="mb-6 flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  Vendedores
+                </h1>
+                <p className="text-gray-600 mt-1 dark:text-gray-300">
+                  Visualiza y gestiona la lista de vendedores.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <Link href={"/novedades/gestion/vendedores/nuevo-vendedor"}>
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Nuevo Vendedor
+                  </button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Table Header with Filter and Sort Buttons */}
+            <div className="flex justify-end gap-2 mb-4 mt-4 relative">
+              {/* Sort Button and Dropdown */}
+              <div className="relative">
+                <Button
+                  ref={sortButtonRef}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsSortMenuOpen(!isSortMenuOpen)}
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
                 >
-                  Nombre
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300"
+                  <ArrowDown className="h-4 w-4" />
+                  Ordenar
+                </Button>
+                {isSortMenuOpen && (
+                  <div
+                    ref={sortMenuRef}
+                    className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-10"
+                  >
+                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Fecha (Más reciente)
+                    </button>
+                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Fecha (Más antigua)
+                    </button>
+                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Cliente (A-Z)
+                    </button>
+                    <button className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Cliente (Z-A)
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Filter Button and Dropdown */}
+              <div className="relative">
+                <Button
+                  ref={filterButtonRef}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsFilterMenuOpen(!isFilterMenuOpen)}
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
                 >
-                  Nómina
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300"
-                >
-                  Departamento
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300"
-                >
-                  Rol
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300"
-                >
-                  Fecha de Ingreso
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300"
-                >
-                  Tipo de Contrato
-                </th>
-                <th scope="col" className="relative px-6 py-3">
-                  <span className="sr-only">Acción</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-              {vendors.map((vendor) => (
-                <tr key={vendor.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
-                        <img
-                          className="h-10 w-10 rounded-full"
-                          src={vendor.avatar || "/placeholder.svg"}
-                          alt={`Avatar de ${vendor.name}`}
+                  <Filter className="h-4 w-4" />
+                  Filtrar
+                </Button>
+                {isFilterMenuOpen && (
+                  <div
+                    ref={filterMenuRef}
+                    className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-100 p-4 z-10"
+                  >
+                    <h4 className="text-base font-semibold leading-none mb-4">
+                      Filter
+                    </h4>
+
+                    {/* Date range */}
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          Date range
+                        </label>
+                        <button
+                          type="button"
+                          className="text-blue-600 text-sm hover:underline"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label
+                            htmlFor="filterDateFrom"
+                            className="block text-xs text-gray-500 mb-1"
+                          >
+                            From:
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="date"
+                              id="filterDateFrom"
+                              className="w-full text-sm pr-8"
+                            />
+                            <CalendarDays className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                          </div>
+                        </div>
+                        <div>
+                          <label
+                            htmlFor="filterDateTo"
+                            className="block text-xs text-gray-500 mb-1"
+                          >
+                            To:
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="date"
+                              id="filterDateTo"
+                              className="w-full text-sm pr-8"
+                            />
+                            <CalendarDays className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Activity type */}
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <label
+                          htmlFor="activityType"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Activity type
+                        </label>
+                        <button
+                          type="button"
+                          className="text-blue-600 text-sm hover:underline"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                      <select
+                        id="activityType"
+                        className="w-full rounded-md border border-gray-300 py-2 px-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option>All warehouses</option>
+                        <option>Warehouse A</option>
+                        <option>Warehouse B</option>
+                      </select>
+                    </div>
+
+                    {/* Status */}
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <label
+                          htmlFor="status"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Status
+                        </label>
+                        <button
+                          type="button"
+                          className="text-blue-600 text-sm hover:underline"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                      <select
+                        id="status"
+                        className="w-full rounded-md border border-gray-300 py-2 px-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      >
+                        <option>Active</option>
+                        <option>Inactive</option>
+                        <option>Pending</option>
+                      </select>
+                    </div>
+
+                    {/* Keyword search */}
+                    <div className="mb-6">
+                      <div className="flex justify-between items-center mb-2">
+                        <label
+                          htmlFor="keywordSearch"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Keyword search
+                        </label>
+                        <button
+                          type="button"
+                          className="text-blue-600 text-sm hover:underline"
+                        >
+                          Reset
+                        </button>
+                      </div>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <input
+                          type="text"
+                          id="keywordSearch"
+                          placeholder="Search..."
+                          className="w-full text-sm py-2 pl-10 pr-4"
                         />
                       </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{vendor.name}</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">{vendor.email}</div>
-                      </div>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {vendor.payroll}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center gap-2">
-                      <span className={`h-2 w-2 rounded-full ${getDepartmentDotClasses(vendor.department)}`} />
-                      {vendor.department}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {vendor.role}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                      {vendor.joiningDate}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getContractTypeClasses(vendor.contractType)}`}
-                    >
-                      {vendor.contractType}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
-                      <MoreVertical className="h-5 w-5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
 
-        {/* Pagination */}
-        <nav className="flex items-center justify-between pt-4" aria-label="Pagination">
-          <div className="hidden sm:block">
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              Mostrando <span className="font-medium">1</span> a <span className="font-medium">10</span> de{" "}
-              <span className="font-medium">100</span> entradas
-            </p>
-          </div>
-          <div className="flex flex-1 justify-between sm:justify-end">
-            <button className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600">
-              <ChevronLeft className="h-4 w-4 mr-2" />
-              Anterior
-            </button>
-            <div className="hidden sm:flex sm:items-center sm:space-x-2 ml-3">
-              {[1, 2, 3, 4, 5, "...", 10].map((page, index) => (
-                <button
-                  key={index}
-                  className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md ${
-                    page === 1
-                      ? "z-10 bg-blue-50 border-blue-500 text-blue-600 dark:bg-blue-900 dark:border-blue-700 dark:text-blue-200"
-                      : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+                    {/* Action buttons */}
+                    <div className="flex justify-between gap-2">
+                      <button
+                        type="button"
+                        className="flex-1 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-md font-medium text-sm transition-colors"
+                      >
+                        Reset all
+                      </button>
+                      <button
+                        type="button"
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors"
+                        onClick={() => setIsFilterMenuOpen(false)} // Close on apply
+                      >
+                        Apply now
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-            <button className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600">
-              Siguiente
-              <ChevronRight className="h-4 w-4 ml-2" />
-            </button>
+
+            {/* Results Table */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 mt-6 overflow-x-auto">
+              <div className="border-b border-gray-200 px-4 py-3">
+                <h2 className="font-medium text-gray-900">Vendedores</h2>
+              </div>
+              {isLoading ? (
+                <TableSkeleton />
+              ) : fetchError ? (
+                <div className="text-center py-8 text-red-600">
+                  {fetchError}
+                </div>
+              ) : vendedores.length === 0 ? (
+                <div className="text-center py-8 text-gray-600">
+                  No hay resultados aún.
+                </div>
+              ) : (
+                <>
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-50 dark:bg-gray-700">
+                      <tr>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300"
+                        >
+                          Nombre
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300"
+                        >
+                          Id
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300"
+                        >
+                          Rol
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300"
+                        >
+                          Fecha de Ingreso
+                        </th>
+                        <th
+                          scope="col"
+                          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300"
+                        >
+                          Estado
+                        </th>
+                        <th scope="col" className="relative px-6 py-3">
+                          <span className="sr-only">Acción</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                      {vendedores.map((vendor) => (
+                        <tr
+                          key={vendor.id}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                            <div className="bg-blue-600 text-white rounded-full w-10 h-10 flex items-center justify-center">
+                              {vendor.nombre.charAt(0)}{vendor.nombre.split("")[1].charAt(0)}
+                            </div>
+                              {/* <div className="flex-shrink-0 h-10 w-10">
+                                <img
+                                  className="h-10 w-10 rounded-full"
+                                  src={vendor.avatar || "/placeholder.svg"}
+                                  alt={`Avatar de ${vendor.nombre}`}
+                                />
+                              </div> */}
+                              <div className="ml-4">
+                                <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                  {vendor.nombre}
+                                </div>
+                                <div className="text-sm text-gray-500 dark:text-gray-400">
+                                  {vendor.email}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {vendor.numero}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            {vendor.tipo}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-gray-400" />
+                              {vendor.fch_ingreso}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getActiveClasses(vendor.baja)}`}
+                            >
+                              {vendor.baja === "N" ? "Activo" : "Baja"}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100">
+                              <MoreVertical className="h-5 w-5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+
+                  <Pagination
+                    total={total}
+                    page={page}
+                    setPage={handlePageChange}
+                    limit={limit}
+                  />
+                </>
+              )}
+            </div>
           </div>
-        </nav>
+        </main>
       </div>
-    </DashboardLayout>
-  )
+    </div>
+  );
 }
