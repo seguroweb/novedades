@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { Search, Filter, ArrowUpDown, Calendar, MoreVertical, ChevronLeft, ChevronRight, User, Sidebar } from "lucide-react"
 import DashboardLayout from "@/app/components/DashboardLayout"
-import { ThemeToggle } from "@/app/components/ThemeToggle"
+import { ThemeToggle } from "@/app/components/HeaderDashboard/components/ThemeToggle"
 import { useTheme } from "@/app/contexts/ThemeContext"
 
 const vendors = [
