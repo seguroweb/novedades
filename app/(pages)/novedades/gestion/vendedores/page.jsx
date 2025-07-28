@@ -38,7 +38,7 @@ import {
   MoreVertical,
 } from "lucide-react";
 import DashboardLayout from "@/app/components/DashboardLayout";
-import { ThemeToggle } from "@/app/components/ThemeToggle";
+import { ThemeToggle } from "@/app/components/HeaderDashboard/components/ThemeToggle";
 import { useTheme } from "@/app/contexts/ThemeContext";
 import MobileMenu from "@/app/components/MobileMenu";
 import Link from "next/link";
