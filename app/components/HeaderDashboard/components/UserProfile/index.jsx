@@ -1,4 +1,4 @@
-import { ChevronDown, LogOut, Settings, User } from "lucide-react";
+import { ChevronDown, LogOut, Settings } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -28,15 +28,6 @@ export const UserProfile = ({ user }) => {
         <div className="absolute right-0 mt-2 w-72 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50">
           <div className="px-4 py-3 border-b border-gray-100">
             <p className="font-medium text-gray-900">{user.name}</p>
-          </div>
-
-          <div className="px-4 py-2 border-b border-gray-100">
-            <div className="flex items-center gap-2 py-1">
-              <User className="h-4 w-4 text-gray-500" />
-              <span className="text-sm text-gray-700">
-                Vendedor Nro.: {user.vendorId}
-              </span>
-            </div>
           </div>
 
           <div className="px-2 py-2">
