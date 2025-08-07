@@ -22,8 +22,8 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import Sidebar from "@/app/components/Sidebar"
-import MobileMenu from "@/app/components/MobileMenu"
+import Sidebar from "../../../../components/Sidebar"
+import MobileMenu from "../../../../components/MobileMenu"
 
 // Datos de ejemplo
 const userInfo = {

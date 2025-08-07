@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { ArrowLeft, Mail, Shield } from "lucide-react"
-import { API_URL } from "@/app/constants/api"
+import { API_URL } from "../../constants/api"
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")

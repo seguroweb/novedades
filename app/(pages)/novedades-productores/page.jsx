@@ -22,8 +22,8 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useAuth } from "@/app/contexts/AuthContext"
-import Sidebar from "@/app/components/Sidebar"
+import { useAuth } from "../../contexts/AuthContext"
+import Sidebar from "../../components/Sidebar"
 
 // Datos de ejemplo
 const userInfo = {

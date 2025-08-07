@@ -1,6 +1,6 @@
 import { DM_Sans } from "next/font/google";
 import "../../globals.css";
-import HeaderDashboard from "@/app/components/HeaderDashboard";
+import HeaderDashboard from "../../components/HeaderDashboard";
 
 const dmSans = DM_Sans({
   subsets: ['latin'],

@@ -24,7 +24,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import Sidebar from "@/app/components/Sidebar"
+import Sidebar from "../../../../../components/Sidebar"
 
 // Datos de ejemplo para el perfil de usuario
 const userInfo = {

@@ -4,8 +4,8 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Eye, EyeOff, Lock, Mail, CheckCircle, XCircle } from "lucide-react"
 import { z } from "zod"
-import { useAuth } from "@/app/contexts/AuthContext"
-import { API_URL } from "@/app/constants/api"
+import { useAuth } from "../../contexts/AuthContext"
+import { API_URL } from "../../constants/api"
 
 // Esquema de validación con Zod
 const loginSchema = z.object({

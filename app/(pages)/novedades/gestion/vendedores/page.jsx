@@ -37,16 +37,16 @@ import {
   CalendarDays,
   MoreVertical,
 } from "lucide-react";
-import DashboardLayout from "@/app/components/DashboardLayout";
-import { ThemeToggle } from "@/app/components/HeaderDashboard/components/ThemeToggle";
-import { useTheme } from "@/app/contexts/ThemeContext";
-import MobileMenu from "@/app/components/MobileMenu";
+import DashboardLayout from "../../../../components/DashboardLayout";
+import { ThemeToggle } from "../../../../components/HeaderDashboard/components/ThemeToggle";
+import { useTheme } from "../../../../contexts/ThemeContext";
+import MobileMenu from "../../../../components/MobileMenu";
 import Link from "next/link";
-import Button from "@/app/components/Button";
+import Button from "../../../../components/Button";
 import { TableSkeleton } from "../../operaciones/consulta/loading";
-import Pagination from "@/app/components/Pagination";
+import Pagination from "../../../../components/Pagination";
 import { useRouter, useSearchParams } from "next/navigation";
-import Sidebar from "@/app/components/Sidebar";
+import Sidebar from "../../../../components/Sidebar";
 
 const vendors = [
   {

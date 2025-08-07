@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Eye, EyeOff } from 'lucide-react'
-import { API_URL } from '@/app/constants/api'
+import { API_URL } from '../../constants/api'
 
 export default function ResetPasswordPage() {
   const [password, setPassword] = useState('')

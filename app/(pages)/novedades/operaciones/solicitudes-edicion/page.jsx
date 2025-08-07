@@ -24,7 +24,7 @@ import {
   Plus,
 } from "lucide-react"
 import { usePathname } from "next/navigation"
-import Sidebar from "@/app/components/Sidebar"
+import Sidebar from "../../../../components/Sidebar"
 import { TableSkeleton } from "../consulta/loading"
 
 // Datos de ejemplo para el perfil de usuario

@@ -3,13 +3,13 @@
 import { useEffect, useState, useRef } from "react";
 import { ChevronDown, Download, Plus, Filter } from "lucide-react";
 import Link from "next/link";
-import Sidebar from "@/app/components/Sidebar";
-import MobileMenu from "@/app/components/MobileMenu";
+import Sidebar from "../../../../components/Sidebar";
+import MobileMenu from "../../../../components/MobileMenu";
 import { TableSkeleton } from "./loading";
-import { EditOperationModal } from "@/app/components/modals/EditOperationModal";
-import Pagination from "@/app/components/Pagination";
+import { EditOperationModal } from "../../../../components/modals/EditOperationModal";
+import Pagination from "../../../../components/Pagination";
 import { useRouter, useSearchParams } from "next/navigation";
-import useFilters from "@/app/hooks/useFilters";
+import useFilters from "../../../../hooks/useFilters";
 import { OperationsTable } from "./components/operationsTable";
 import { OperationsFilters } from "./components/operationsFilters";
 import { OperationsFilterForm } from "./components/operationsFilterForm";

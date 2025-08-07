@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { Calendar, ClipboardList, FileText, User } from "lucide-react";
-import { useAuth } from "@/app/contexts/AuthContext";
-import Sidebar from "@/app/components/Sidebar";
+import { useAuth } from "../../contexts/AuthContext";
+import Sidebar from "../../components/Sidebar";
 import { WelcomeCard } from "./components/WelcomeCard";
 import { MobileMenu } from "./components/MobileMenu";
 import { StatsCard } from "./components/StatsCard";

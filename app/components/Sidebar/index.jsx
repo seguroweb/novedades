@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-const { LINKS_MENU } = require("@/app/constants/menuItems");
+const { LINKS_MENU } = require("../../constants/menuItems");
 import { ChevronDown } from "lucide-react";
 
 const Sidebar = () => {
