@@ -13,71 +13,18 @@ import useFilters from "@/app/hooks/useFilters";
 import { OperationsTable } from "./components/operationsTable";
 import { OperationsFilters } from "./components/operationsFilters";
 import { OperationsFilterForm } from "./components/operationsFilterForm";
+import { NewOperationModal } from "@/app/components/modals/NewOperationModal";
 
 // Componente principal de Consulta de Operaciones
 export default function ConsultaOperaciones() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showResults, setShowResults] = useState(true); // State to control table visibility
-  const [operations, setOperations] = useState([
-    {
-      numero: "001",
-      product: { descripcion: "Auto" },
-      seller: { nombre: "Juan Pérez" },
-      fecha: "2025-07-20",
-      primeraGestion: "2025-07-21",
-      nombre: "Carlos García",
-      codigo_postal: "28001",
-      telefono: "600123456",
-      email: "carlos.garcia@example.com",
-      paymentMethod: { description: "Tarjeta de crédito" },
-      status: { descripcion: "En proceso" },
-      acStatus: { descripcion: "Emitido" },
-      cancellationReason: null,
-      channel: { descripcion: "Online" },
-      ultimaGestion: "2025-07-25",
-      proximoContacto: "2025-08-01",
-    },
-    {
-      numero: "002",
-      product: { descripcion: "Bicicleta" },
-      seller: { nombre: "Laura Martínez" },
-      fecha: "2025-07-19",
-      primeraGestion: "2025-07-20",
-      nombre: "María López",
-      codigo_postal: "08002",
-      telefono: "612345678",
-      email: "maria.lopez@example.com",
-      paymentMethod: { description: "Transferencia bancaria" },
-      status: { descripcion: "Completado" },
-      acStatus: { descripcion: "Emitido" },
-      cancellationReason: null,
-      channel: { descripcion: "Tienda física" },
-      ultimaGestion: "2025-07-22",
-      proximoContacto: "2025-08-03",
-    },
-    {
-      numero: "003",
-      product: { descripcion: "Moto" },
-      seller: { nombre: "Pedro Sánchez" },
-      fecha: "2025-07-18",
-      primeraGestion: "2025-07-19",
-      nombre: "Luis Fernández",
-      codigo_postal: "50003",
-      telefono: "622334455",
-      email: "luis.fernandez@example.com",
-      paymentMethod: null,
-      status: { descripcion: "Cancelado" },
-      acStatus: null,
-      cancellationReason: { descripcion: "Cliente no interesado" },
-      channel: { descripcion: "Call center" },
-      ultimaGestion: "2025-07-20",
-      proximoContacto: "2025-08-05",
-    },
-  ]); // State to store fetched operations
+  const [operations, setOperations] = useState([]); // State to store fetched operations
   const [isLoading, setIsLoading] = useState(false); // State for loading indicator
   const [fetchError, setFetchError] = useState(null); // State for fetch errors
   const [isFilterOpen, setIsFilterOpen] = useState(false); // State to control filter section visibility
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
+  const [isNewOperationModalOpen, setIsNewOperationModalOpen] = useState(false);
   const [onlyView, setOnlyView] = useState(false);
   const [selectedOperation, setSelectedOperation] = useState(null); // State to hold data of the operation being edited
 
@@ -150,7 +97,7 @@ export default function ConsultaOperaciones() {
       const operaciones = await response.json();
       // Assuming the backend returns data in a format similar to operationsData
       // You might need to transform the data here if the backend structure is different
-      // setOperations(operaciones.data);
+      setOperations(operaciones.data);
       setTotal(operaciones.total);
     } catch (error) {
       console.error("Error fetching operations:", error);
@@ -172,6 +119,10 @@ export default function ConsultaOperaciones() {
   const handleModalClose = () => {
     setIsModalOpen(false);
     setSelectedOperation(null);
+  };
+
+  const handleNewOperationModalClose = () => {
+    setIsNewOperationModalOpen(false);
   };
 
   const handleSaveOperation = (updatedOperation) => {
@@ -255,7 +206,7 @@ export default function ConsultaOperaciones() {
       {/* Main content */}
       <div className="flex">
         {/* Desktop sidebar */}
-        <div className="hidden lg:block w-64 border-r border-gray-200 h-[calc(100vh-64px)] sticky top-16">
+        <div className="hidden lg:block pl-12">
           <Sidebar />
         </div>
 
@@ -306,15 +257,14 @@ export default function ConsultaOperaciones() {
                 </p>
               </div>
               <div className="flex gap-3">
-                <Link href={"/novedades/operaciones/consulta/nueva-operacion"}>
-                  <button
-                    type="button"
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition-colors"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Nueva Operación
-                  </button>
-                </Link>
+                <button
+                  type="button"
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm transition-colors"
+                  onClick={() => setIsNewOperationModalOpen(true)}
+                >
+                  <Plus className="h-4 w-4" />
+                  Nueva Operación
+                </button>
                 <button
                   type="button"
                   className="flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white px-4 py-2 rounded-md text-sm transition-colors"
@@ -461,6 +411,11 @@ export default function ConsultaOperaciones() {
         operationData={selectedOperation}
         onSave={handleSaveOperation}
         onlyView={onlyView}
+      />
+
+      <NewOperationModal
+        isOpen={isNewOperationModalOpen}
+        onClose={handleNewOperationModalClose}
       />
     </div>
   );
