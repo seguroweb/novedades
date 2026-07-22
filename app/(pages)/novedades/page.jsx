@@ -9,6 +9,7 @@ import { MobileMenu } from "./components/MobileMenu";
 import { StatsCard } from "./components/StatsCard";
 import { Charts } from "./components/Charts";
 import { SellersTable } from "./components/SellersTable";
+import { SellersModal } from "@/app/components/modals/SellersModal";
 
 // Datos de ejemplo
 const userInfo = {
@@ -151,6 +152,12 @@ const UpcomingEventsCard = () => {
 // Componente principal del Dashboard
 export default function Dashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedSeller, setSelectedSeller] = useState(null);
+
+  const handleOpenSeller = (seller) => setSelectedSeller(seller);
+  const handleModalClose = () => setSelectedSeller(null);
+
   // TODO Switch isAdmin
   const isAdmin = true;
   const { user, logout } = useAuth();
@@ -195,7 +202,7 @@ export default function Dashboard() {
       {/* Main content */}
       <div className="flex">
         {/* Desktop sidebar */}
-        <div className="hidden lg:block w-64 border-r border-gray-200 h-[calc(100vh-64px)] sticky top-16">
+        <div className="hidden lg:block pl-12">
           <Sidebar />
         </div>
 
@@ -220,14 +227,20 @@ export default function Dashboard() {
           </div>
 
           <Charts />
-          
+
           {isAdmin && (
             <div className="mt-5">
-              <SellersTable />
+              <SellersTable onViewSeller={handleOpenSeller} />
             </div>
           )}
         </main>
       </div>
+
+      <SellersModal
+        isOpen={!!selectedSeller}
+        onClose={handleModalClose}
+        operationData={selectedSeller}
+      />
     </div>
   );
 }

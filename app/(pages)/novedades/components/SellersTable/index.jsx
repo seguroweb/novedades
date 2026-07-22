@@ -24,7 +24,7 @@ const sellers = [
   },
 ];
 
-export const SellersTable = () => {
+export const SellersTable = ({ onViewSeller }) => {
   return (
     <div className="overflow-x-auto rounded-lg shadow border border-gray-200 bg-white">
       <table className="min-w-full divide-y divide-gray-200">
@@ -85,7 +85,7 @@ export const SellersTable = () => {
               <td className="px-4 py-3 whitespace-nowrap">
                 <button
                   className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm"
-                  onClick={() => alert(`Ver estadísticas de ${seller.name}`)}
+                  onClick={() => onViewSeller?.(seller)}
                 >
                   <BarChart3 className="w-4 h-4" />
                   Detalles
